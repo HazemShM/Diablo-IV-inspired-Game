@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.Events;
 public class BarbarianAnimation : MonoBehaviour
