@@ -31,18 +31,18 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Update(){
-        HandleInput();
+        if (movement.ReadValue<float>() == 1){
+            HandleInput();
+        }
         OnSpeedChanged?.Invoke(Mathf.Clamp01(agent.velocity.magnitude / agent.speed));
     }
 
-    private void HandleInput(){
-        if (movement.ReadValue<float>() == 1){
-            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-            RaycastHit hit;
+    public void HandleInput(){
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
 
-            if(Physics.Raycast(ray, out hit, 100, layerMask)){
-                PlayerMove(hit.point);
-            }
+        if(Physics.Raycast(ray, out hit, 100, layerMask)){
+            PlayerMove(hit.point);
         }
     }
 
