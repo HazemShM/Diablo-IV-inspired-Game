@@ -263,6 +263,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+
 --- !u!1001 &59277846
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5502,6 +5503,10 @@ Transform:
 --- !u!1001 &2116620807
 PrefabInstance:
   m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2059964621}
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
