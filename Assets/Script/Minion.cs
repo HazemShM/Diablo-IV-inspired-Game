@@ -13,12 +13,12 @@ public class Minion : MonoBehaviour
     private Animator MinionAnimator;
     public float closeDistance = 20f; 
     public float attackRange = 2f;
-    private Colliding campCollider;
+    private Colliding_Minion campCollider;
     public GameObject campArea;
     void Start()
     {
         agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
-        campCollider = campArea.GetComponent<Colliding>(); // Get the CampCollider script
+        campCollider = campArea.GetComponent<Colliding_Minion>(); // Get the CampCollider script
         MinionAnimator = GetComponent<Animator>(); // Get the Animator component
 
         // Randomly assign state (either NonAggressive or Alerted)

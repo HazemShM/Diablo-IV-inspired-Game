@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Colliding : MonoBehaviour
+public class Colliding_Minion : MonoBehaviour
 {
     public bool playerInCamp = false; 
 
