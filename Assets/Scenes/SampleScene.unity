@@ -245,7 +245,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10.04
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
       propertyPath: m_LocalRotation.w
@@ -715,7 +715,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1123985661}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
   m_Controller: {fileID: 9100000, guid: edec3cba8c115824e968c55ace69bb2e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -741,10 +741,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 1123985663}
   minions: {fileID: 4084481338172492981, guid: 55133d4ae14ecfd4b8ee232231cd4da8, type: 3}
+  Bloodspikes: {fileID: 899356334554196527, guid: 96fa8e3437b501a40b41a7938fa54bd6, type: 3}
   maxMinions: 3
   activeMinions: []
   Phase: 
-  shield: {fileID: 0}
+  shield: {fileID: 3377181292992421420, guid: 48c5715f9603c3842a353516a8baefbb, type: 3}
   shieldHealth: 50
   bossHealth: 50
 --- !u!1 &1575039418
