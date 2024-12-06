@@ -10,7 +10,6 @@ public class Colliding : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player entered the zone");
             playerInCamp = true;
         }
     }
@@ -19,7 +18,6 @@ public class Colliding : MonoBehaviour
      {
          if (other.CompareTag("Player"))
         {
-            Debug.Log("Player entered the zone");
             playerInCamp = true;
         }
      }
@@ -28,7 +26,6 @@ public class Colliding : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player left the zone");
             playerInCamp = false;
         }
     }

@@ -25,7 +25,7 @@ public class Navigation : MonoBehaviour
         {
             float distance = Vector3.Distance(transform.position, player.position);
             if (distance < closeDistance)
-            {
+            {   
                 if (animator != null && 
                     !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
                 {
