@@ -11,7 +11,6 @@ public class BarbarianAnimation : MonoBehaviour
     private Transform selectedTarget;
     private PlayerController playerController;
     public bool canAttack = true;
-    public GameObject HitParticle;
     public AudioClip bashAttackSound;
     public AudioClip ironMaelstormAttackSound;
 
@@ -93,11 +92,13 @@ private IEnumerator ChargeSequence()
     }
 
     Vector3 target = targetPosition.Value;
-
+    Animator anim = GetComponent<Animator>();
     NavMeshHit hit;
     if (!NavMesh.SamplePosition(target, out hit, 1.0f, NavMesh.AllAreas))
     {
         Debug.LogWarning("Target position is not on a valid NavMesh!");
+        anim.SetBool("isCharging", false);
+        canAttack = true;
         yield break; // Stop the coroutine if the target is not valid
     }
     
@@ -109,7 +110,7 @@ private IEnumerator ChargeSequence()
     NavMeshAgent agent = playerController.GetComponent<NavMeshAgent>();
     agent.isStopped = true;
 
-    Animator anim = GetComponent<Animator>();
+    
     anim.SetBool("isCharging", true);
     anim.SetTrigger("Charge");
 
