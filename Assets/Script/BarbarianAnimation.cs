@@ -1,50 +1,114 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.AI;
-using UnityEngine.XR;
+using System.Collections.Generic;
 public class BarbarianAnimation : MonoBehaviour
 {
     [SerializeField] private string movementSpeed = "MovementSpeed";
+    Animator anim;
+    AudioSource ac;
+    private Camera cam ;
+    private NavMeshAgent agent;
     [SerializeField] private InputAction selectTarget = new InputAction();
     private Transform selectedTarget;
     private PlayerController playerController;
+    private List<Ability> abilities = new List<Ability>();
+    Ability currentAbility ;
     public bool canAttack = true;
+    bool isUsingAbility = false;
     public AudioClip bashAttackSound;
     public AudioClip ironMaelstormAttackSound;
 
     public void Start(){
+        cam = Camera.main;
         playerController = GetComponent<PlayerController>();
+        agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
+        ac = GetComponent<AudioSource>();
+        Ability basicAbillity =new Ability(AbilityType.Basic,"Bash", KeyCode.Mouse1, 5, 1);
+        basicAbillity.unlockAbility();
+        abilities.Add(basicAbillity);
+        abilities.Add(new Ability(AbilityType.Defensive,"Shield", KeyCode.W, 0, 10));
+        abilities.Add(new Ability(AbilityType.WildCard,"Iron Maelstorm", KeyCode.Q, 10, 5));
+        abilities.Add(new Ability(AbilityType.Ultimate,"Charge", KeyCode.E, 100, 10));
     }
     public void Update(){
-        if (Input.GetKeyDown(KeyCode.Space)){
-            if(canAttack){
-                IronMaelstorm();
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.W)){
-            if(canAttack){
-                Bash();
-            }
-        }
-        if(Input.GetKeyDown(KeyCode.E)){
-           if(canAttack){
-                Charge();
-            }
-        }
 
-        if(selectTarget.WasPressedThisFrame()){
-            SelectTarget();
+
+        foreach (var ability in abilities)
+        {
+            if (ability.isOnCooldown)
+            {
+                ability.cooldownTimer -= Time.deltaTime;
+                if (ability.cooldownTimer <= 0 && ability.isOnCooldown)
+                {
+                    ability.cooldownTimer = 0;
+                    ability.isOnCooldown = false;
+                    Debug.Log($"{ability.name} is ready!");
+                }
+            }
+
+            if (Input.GetKeyDown(ability.activationKey))
+            {   
+                if(isUsingAbility){
+                    Debug.Log($"{currentAbility.name} is currently active!");
+                    continue;
+                }
+                if(!ability.isOnCooldown){
+                    Debug.Log($"{ability.name} is called!");
+                    UseAbility(ability);
+                }else{
+                    Debug.Log($"{ability.name} is on cooldown!");
+                }
+            }
         }
+        if(isUsingAbility){ 
+                if(currentAbility.type == AbilityType.Basic){
+                    SelectTarget();
+                    Bash();
+                }else if(currentAbility.type == AbilityType.Defensive){
+                    Debug.Log("Shield");
+                    isUsingAbility = false;
+                }else if(currentAbility.type == AbilityType.WildCard){
+                    IronMaelstorm();
+                }else if(currentAbility.type == AbilityType.Ultimate){
+                    Charge();
+                }
+        }
+        // if (Input.GetKeyDown(KeyCode.Space)){
+        //     if(canAttack){
+        //         IronMaelstorm();
+        //     }
+        // }
+        // if(Input.GetKeyDown(KeyCode.E)){
+        //    if(canAttack){
+        //         Charge();
+        //     }
+        // }
+
+        // if(selectTarget.WasPressedThisFrame()){
+        //     if(canAttack){   
+        //         SelectTarget();
+        //         Bash();
+        //     }
+        // }
+    }
+
+    void UseAbility(Ability ability)
+    {   
+        currentAbility =ability;
+        Debug.Log($"{ability.name} used!");
+        ability.isOnCooldown = true;
+        ability.cooldownTimer = ability.cooldownTime;
+        isUsingAbility = true;
     }
 
     public void IronMaelstorm()
-{   
+{
         canAttack = false;
-        Animator anim = GetComponent<Animator>();
+        isUsingAbility = false;
         anim.SetTrigger("IronMaelstorm");
-        AudioSource ac = GetComponent<AudioSource>();
         ac.PlayOneShot(ironMaelstormAttackSound);
         StartCoroutine(AttackCooldownIronMaelstorm());
 }
@@ -59,16 +123,16 @@ public class BarbarianAnimation : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(directionToTarget);
 
         canAttack = false;
-        Animator anim = GetComponent<Animator>();
         anim.SetTrigger("Bash");
-        AudioSource ac = GetComponent<AudioSource>();
         ac.PlayOneShot(bashAttackSound);
         StartCoroutine(AttackCooldownBash());
+        selectedTarget = null;
     }
 
     public void Charge()
 {
     canAttack = false;
+    isUsingAbility = false;
     Debug.Log("Charge ability activated! Use right-click to select the charge target.");
 
     StartCoroutine(ChargeSequence());
@@ -81,7 +145,7 @@ private IEnumerator ChargeSequence()
     {
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit1, 100))
             {
                 targetPosition = hit1.point;
@@ -92,7 +156,6 @@ private IEnumerator ChargeSequence()
     }
 
     Vector3 target = targetPosition.Value;
-    Animator anim = GetComponent<Animator>();
     NavMeshHit hit;
     if (!NavMesh.SamplePosition(target, out hit, 1.0f, NavMesh.AllAreas))
     {
@@ -107,9 +170,7 @@ private IEnumerator ChargeSequence()
     directionToTarget.y = 0;
     transform.rotation = Quaternion.LookRotation(directionToTarget);
 
-    NavMeshAgent agent = playerController.GetComponent<NavMeshAgent>();
     agent.isStopped = true;
-
     
     anim.SetBool("isCharging", true);
     anim.SetTrigger("Charge");
@@ -154,18 +215,22 @@ private IEnumerator ChargeSequence()
         selectTarget.Disable();
     }
     private void SelectTarget(){
-        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Debug.Log("here");
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 1f);
         RaycastHit hit;
             if(Physics.Raycast(ray, out hit, 10)){
+                float hitDistance = Vector3.Distance(ray.origin, hit.point);
+                Debug.Log("Hit distance: " + hitDistance);
                 if(hit.transform.CompareTag("Enemy")){
                     selectedTarget = hit.transform;
-                    Debug.Log("hit enemy");
+                     Debug.Log("Hit enemy at distance: " + hitDistance);
                     }
             }
+        isUsingAbility = false;
     }   
 
     public void SetSpeed(float speed){
-        Animator anim = GetComponent<Animator>();
         anim.SetFloat(movementSpeed, speed);
     }
 
