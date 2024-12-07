@@ -5,16 +5,27 @@ using UnityEngine.AI;
 
 public class Minion : MonoBehaviour
 {
-    public enum MinionState { NonAggressive, Alerted }
+    public enum MinionState
+    {
+        NonAggressive,
+        Alerted,
+    }
+
     public MinionState currentState;
     public float health = 20f;
+    public int attackDamage = 5; // Damage dealt by the minion
+    public float damageInterval = 2f; // Time between consecutive attacks
+    private bool isPlayerInRange = false; // Tracks if the player is within range
+    private Coroutine damageCoroutine;
     public Transform player;
     private NavMeshAgent agent;
     private Animator MinionAnimator;
-    public float closeDistance = 20f; 
+    public float closeDistance = 20f;
     public float attackRange = 2f;
     private Colliding_Minion campCollider;
     public GameObject campArea;
+    private PlayerController playerController;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
@@ -22,7 +33,7 @@ public class Minion : MonoBehaviour
         MinionAnimator = GetComponent<Animator>(); // Get the Animator component
 
         // Randomly assign state (either NonAggressive or Alerted)
-        currentState =  MinionState.Alerted;
+        currentState = MinionState.Alerted;
 
         Debug.Log("Minion state is: " + currentState);
     }
@@ -40,13 +51,10 @@ public class Minion : MonoBehaviour
                 // If within attack range, stop moving and attack
                 if (distance <= attackRange)
                 {
-                    agent.isStopped = true; // Stop the agent from moving
-                    MinionAnimator.SetBool("punch",true); // Trigger the attack animation
-                    MinionAnimator.SetBool("run", false); // Ensure the run animation is not playing
-                    MinionAnimator.SetBool("idle", false); // Ensure idle is not playing
-                    Debug.Log("run: " + MinionAnimator.GetBool("run"));
-                    Debug.Log("idle: " + MinionAnimator.GetBool("idle"));
-                    Debug.Log("punch: " + MinionAnimator.GetBool("punch"));
+                    agent.isStopped = true;
+                    MinionAnimator.SetBool("punch", true);
+                    MinionAnimator.SetBool("run", false);
+                    MinionAnimator.SetBool("idle", false);
                 }
                 else
                 {
@@ -56,8 +64,7 @@ public class Minion : MonoBehaviour
                     MinionAnimator.SetBool("run", true); // Running animation
                     MinionAnimator.SetBool("idle", false);
                     MinionAnimator.SetBool("punch", false);
-                    Debug.Log("run: " + MinionAnimator.GetBool("run"));
-
+                    // Debug.Log("run: " + MinionAnimator.GetBool("run"));
                 }
             }
         }
@@ -70,12 +77,12 @@ public class Minion : MonoBehaviour
             MinionAnimator.SetBool("punch", false);
         }
 
-       
-        if (health <= 0 ) 
+        if (health <= 0)
         {
             Die();
         }
     }
+
     public void TakeDamage(float damageAmount)
     {
         // All Minions can take damage, regardless of their state
@@ -90,19 +97,42 @@ public class Minion : MonoBehaviour
 
     private void Die()
     {
-        // Play death animation or trigger any other logic
-        MinionAnimator.SetTrigger("die"); // You can set up a "die" animation here
-        agent.isStopped = true; // Stop the agent from moving
-        Debug.Log("Minion has died!");
-        Destroy(gameObject, 2f);
+        MinionAnimator.SetTrigger("die");
+        agent.isStopped = true;
+        Destroy(gameObject, 3f);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInRange = true;
+            playerController = other.GetComponent<PlayerController>();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInRange = false;
+            playerController = null;
+        }
+    }
+
+    // Called via Animation Event
+    public void DealDamageToPlayer()
+    {
+        if (isPlayerInRange && player != null)
+        {
+            playerController.TakeDamage(attackDamage);
+            Debug.Log("Minion dealt damage to the player!");
+        }
     }
 
     public void AlertMinion()
     {
-        currentState = MinionState.Alerted; // Switch to Alerted state
+        currentState = MinionState.Alerted;
         Debug.Log("Minion is now Alerted!");
     }
-
-
-
 }
