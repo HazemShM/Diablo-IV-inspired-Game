@@ -14,39 +14,27 @@ public class LilithAnimation : MonoBehaviour
     [SerializeField] private float shieldHealth = 50f; // Shield health (Phase 2)
     [SerializeField] private float bossHealth = 50f; // Boss health in both phases (Phase 1 & 2)
     private bool isShieldActive = false; // Tracks if Lilith's shield is active (Phase 2)
+    AudioSource ac;
+    public AudioClip BloodSpikesSound;
+    public AudioClip DiveBombSound;
+    public AudioClip ShieldSound;
+    public AudioClip SummonSound;
 
     private bool hasDestroyedMinion = false; //TEST
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        ac = GetComponent<AudioSource>();
         StartCoroutine(ReflectiveAura());
-        //BloodSpikes();
+        // StartCoroutine(DiveBomb());
+        // SummonMinions();
+        // BloodSpikes();
     }
-
     void Update()
     {
         // SummonMinions();  // Shouldn't be put in Update() (As per TA Abdelrahman)
-        //TEST SummonMinions
-        if (!hasDestroyedMinion && activeMinions.Count > 0 && Time.time > 5)
-        {
-            // Destroy all minions one by one
-            while (activeMinions.Count > 0)
-            {
-                // Get the last minion in the list
-                GameObject lastMinion = activeMinions[activeMinions.Count - 1];
-                Destroy(lastMinion);
-                activeMinions.RemoveAt(activeMinions.Count - 1);
-                animator.SetInteger("ActiveMinions", activeMinions.Count);
-
-                Debug.Log("Minion destroyed. Remaining: " + activeMinions.Count);
-            }
-
-            // Set the flag to true so this runs only once
-            hasDestroyedMinion = true;
-        }
     }
-
     public void SummonMinions() // Needs better logic here 
     {
         // Check if the activeMinions list is empty
@@ -60,13 +48,13 @@ public class LilithAnimation : MonoBehaviour
             Debug.Log("Minions are already present, summoning skipped.");
         }
     }
-
     private IEnumerator SummonMinionsWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay); // wait for the delay (1.2 seconds)
         // Summon minions after the delay
         if (activeMinions.Count == 0) // Double-check to avoid duplicates
         {
+            ac.PlayOneShot(SummonSound);
             for (int i = 0; i < maxMinions; i++)
             {
                 // Calculate a random position within a 5-unit range from Lilith's position
@@ -79,22 +67,23 @@ public class LilithAnimation : MonoBehaviour
             Debug.Log($"{activeMinions.Count} minions summoned!");
         }
     }
-
-    public void DiveBomb()
+    public IEnumerator DiveBomb()
     {
-            animator.SetTrigger("Divebomb");
+        animator.SetTrigger("Divebomb");
+        yield return new WaitForSeconds(1.5f);
+        ac.PlayOneShot(DiveBombSound);
     }
-
     public IEnumerator ReflectiveAura()
     {
         animator.SetTrigger("ReflectiveAura");
         isShieldActive = true;
         Vector3 spawnPosition = new Vector3(transform.position.x, 0, transform.position.z);
         Quaternion spawnRotation = Quaternion.identity; // No rotation
-        yield return new WaitForSeconds(1.6f);
+        yield return new WaitForSeconds(0.2f);
+        ac.PlayOneShot(ShieldSound);
+        yield return new WaitForSeconds(1.5f);
         GameObject bloodspikesInstance = Instantiate(shield, spawnPosition, spawnRotation);
     }
-
     public void BloodSpikes()
     {
         animator.SetTrigger("BloodSpikes");
@@ -107,8 +96,12 @@ public class LilithAnimation : MonoBehaviour
         spawnPosition.y = -4;
         GameObject bloodspikes = Instantiate(Bloodspikes, spawnPosition, Quaternion.LookRotation(transform.forward));
         yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, 0, 1.0f));
-        yield return new WaitForSeconds(2.0f);
+        ac.PlayOneShot(BloodSpikesSound);
+        yield return new WaitForSeconds(1.8f);
+        ac.PlayOneShot(BloodSpikesSound);
+        yield return new WaitForSeconds(0.2f);
         yield return StartCoroutine(MoveBloodSpikes(bloodspikes, 0, -4, 1.0f));
+        
         Destroy(bloodspikes);
     }
     private IEnumerator MoveBloodSpikes(GameObject bloodspikes, float startY, float endY, float duration)
