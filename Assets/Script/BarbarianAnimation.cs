@@ -262,11 +262,7 @@ public class BarbarianAnimation : MonoBehaviour
 
     private IEnumerator AttackCooldownIronMaelstorm()
     {
-        Collider weaponCollider = GetComponentInChildren<Collider>();
-        weaponCollider.enabled = true;
-
         yield return new WaitForSeconds(1.5f);
-        weaponCollider.enabled = false; // Duration of the IronMaelstorm attack
         canAttack = true; // Re-enable other actions
     }
 
