@@ -27,6 +27,9 @@ public class Minion : MonoBehaviour
     private PlayerController playerController;
     GameObject playerObject;
 
+    // Store the minion's original position
+    private Vector3 originalPosition;
+
     void Start()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
@@ -47,10 +50,14 @@ public class Minion : MonoBehaviour
         {
             Debug.LogWarning($"{gameObject.name} could not find its camp!");
         }
+
         MinionAnimator = GetComponent<Animator>();
         playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.transform;
         currentState = MinionState.Alerted;
+
+        // Store the original position of the minion
+        originalPosition = transform.position;
 
         Debug.Log("Minion state is: " + currentState);
     }
@@ -82,10 +89,22 @@ public class Minion : MonoBehaviour
         }
         else
         {
-            agent.isStopped = true;
-            MinionAnimator.SetBool("idle", true);
-            MinionAnimator.SetBool("run", false);
-            MinionAnimator.SetBool("punch", false);
+            // When the player leaves the camp, move back to the original position
+            if (agent.remainingDistance <= agent.stoppingDistance)
+            {
+                // The minion has reached its original position
+                MinionAnimator.SetBool("idle", true);
+                MinionAnimator.SetBool("run", false);
+                MinionAnimator.SetBool("punch", false);
+            }
+            else
+            {
+                agent.isStopped = false;
+                agent.SetDestination(originalPosition); // Move back to the original position
+                MinionAnimator.SetBool("run", true);
+                MinionAnimator.SetBool("idle", false);
+                MinionAnimator.SetBool("punch", false);
+            }
         }
 
         if (health <= 0)
