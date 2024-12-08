@@ -281,7 +281,7 @@ public class BarbarianAnimation : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 1f);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 10))
+        if (Physics.Raycast(ray, out hit, 10, playerController.layerMask))
         {
             float hitDistance = Vector3.Distance(ray.origin, hit.point);
             Debug.Log("Hit distance: " + hitDistance);

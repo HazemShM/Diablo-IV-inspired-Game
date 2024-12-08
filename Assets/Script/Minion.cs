@@ -13,26 +13,43 @@ public class Minion : MonoBehaviour
 
     public MinionState currentState;
     public float health = 20f;
-    public int attackDamage = 5; // Damage dealt by the minion
-    public float damageInterval = 2f; // Time between consecutive attacks
-    private bool isPlayerInRange = false; // Tracks if the player is within range
+    public int attackDamage = 5;
+    public float damageInterval = 2f;
+    private bool isPlayerInRange = false;
     private Coroutine damageCoroutine;
-    public Transform player;
+    private Transform player;
     private NavMeshAgent agent;
     private Animator MinionAnimator;
     public float closeDistance = 20f;
     public float attackRange = 2f;
     private Colliding_Minion campCollider;
-    public GameObject campArea;
+    private GameObject campArea;
     private PlayerController playerController;
+    GameObject playerObject;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component
-        campCollider = campArea.GetComponent<Colliding_Minion>(); // Get the CampCollider script
-        MinionAnimator = GetComponent<Animator>(); // Get the Animator component
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
+        Debug.Log(colliders);
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Camp"))
+            {
+                campArea = collider.gameObject;
+                break;
+            }
+        }
 
-        // Randomly assign state (either NonAggressive or Alerted)
+        agent = GetComponent<NavMeshAgent>();
+        campCollider = campArea.GetComponent<Colliding_Minion>();
+
+        if (campCollider == null)
+        {
+            Debug.LogWarning($"{gameObject.name} could not find its camp!");
+        }
+        MinionAnimator = GetComponent<Animator>();
+        playerObject = GameObject.FindGameObjectWithTag("Player");
+        player = playerObject.transform;
         currentState = MinionState.Alerted;
 
         Debug.Log("Minion state is: " + currentState);
@@ -40,15 +57,12 @@ public class Minion : MonoBehaviour
 
     void Update()
     {
-        // If the Player is inside the camp area (from the Collider script)
         if (campCollider.playerInCamp)
         {
             if (currentState == MinionState.Alerted)
             {
-                // Get the distance between the Minion and the Player
                 float distance = Vector3.Distance(transform.position, player.position);
 
-                // If within attack range, stop moving and attack
                 if (distance <= attackRange)
                 {
                     agent.isStopped = true;
@@ -58,21 +72,18 @@ public class Minion : MonoBehaviour
                 }
                 else
                 {
-                    // Move towards the player if not within attack range
                     agent.isStopped = false;
-                    agent.SetDestination(player.position); // Keep moving toward the player
-                    MinionAnimator.SetBool("run", true); // Running animation
+                    agent.SetDestination(player.position);
+                    MinionAnimator.SetBool("run", true);
                     MinionAnimator.SetBool("idle", false);
                     MinionAnimator.SetBool("punch", false);
-                    // Debug.Log("run: " + MinionAnimator.GetBool("run"));
                 }
             }
         }
         else
         {
-            // If the Player leaves the camp or is outside the detection range, stop Minion
             agent.isStopped = true;
-            MinionAnimator.SetBool("idle", true); // Idle animation when out of range
+            MinionAnimator.SetBool("idle", true);
             MinionAnimator.SetBool("run", false);
             MinionAnimator.SetBool("punch", false);
         }
@@ -85,8 +96,7 @@ public class Minion : MonoBehaviour
 
     public void TakeDamage(float damageAmount)
     {
-        // All Minions can take damage, regardless of their state
-        health -= damageAmount; // Reduce health by damage amount
+        health -= damageAmount;
         Debug.Log("Minion Health: " + health);
 
         if (health <= 0)
@@ -120,7 +130,6 @@ public class Minion : MonoBehaviour
         }
     }
 
-    // Called via Animation Event
     public void DealDamageToPlayer()
     {
         if (isPlayerInRange && player != null)
