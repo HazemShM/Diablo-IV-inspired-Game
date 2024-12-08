@@ -112,6 +112,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2633459520689776011}
   m_SourcePrefab: {fileID: 100100000, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
+--- !u!4 &4047484327243133103 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6502182839619065283, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
+  m_PrefabInstance: {fileID: 7068374715679319404}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7986712324874836029 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
@@ -184,6 +189,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smokePrefab: {fileID: 1273915125232972, guid: 73767e07adddc394d82b994801f89bbb, type: 3}
+  arrowPrefab: {fileID: 4466946927321032444, guid: 30fe567cc6f6c9243ac402bbf9ca49ec, type: 3}
+  arrowPoint: {fileID: 4047484327243133103}
   layerMask:
     serializedVersion: 2
     m_Bits: 64
