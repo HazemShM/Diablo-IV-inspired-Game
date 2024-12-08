@@ -127,26 +127,26 @@ public class BarbarianAnimation : MonoBehaviour
         directionToTarget.y = 0;
         transform.rotation = Quaternion.LookRotation(directionToTarget);
 
-        Minion minion = selectedTarget.GetComponent<Minion>();
-        Animator minionAnimator = minion.GetComponent<Animator>();
-        if (minion != null)
+        Enemy enemy = selectedTarget.GetComponent<Enemy>();
+        Animator enemyAnimator = enemy.GetComponent<Animator>();
+        if (enemy != null)
         {
             GameObject particleInstance = Instantiate(
                 hitParticle,
                 new Vector3(
-                    minion.transform.position.x,
+                    enemy.transform.position.x,
                     transform.position.y,
-                    minion.transform.position.z
+                    enemy.transform.position.z
                 ),
-                minion.transform.rotation
+                enemy.transform.rotation
             );
             Destroy(particleInstance, 2.0f);
-            minionAnimator.SetTrigger("hit");
-            minion.TakeDamage(currentAbility.damage); // Deal damage
-            Debug.Log(minion.health);
-            if (minion.health <= 0)
+            enemyAnimator.SetTrigger("hit");
+            enemy.TakeDamage(currentAbility.damage); // Deal damage
+            Debug.Log(enemy.health);
+            if (enemy.health <= 0)
             {
-                playerController.GainXP(100);
+                playerController.GainXP(enemy.getXp());
             }
         }
 
@@ -182,15 +182,15 @@ public class BarbarianAnimation : MonoBehaviour
                     other.transform.rotation
                 );
                 Destroy(particleInstance, 2.0f);
-                Minion minion = other.GetComponent<Minion>();
-                Animator minionAnimator = minion.GetComponent<Animator>();
-                if (minion != null)
+                Enemy enemy = other.GetComponent<Enemy>();
+                Animator enemyAnimator = enemy.GetComponent<Animator>();
+                if (enemy != null)
                 {
-                    minionAnimator.SetTrigger("hit");
-                    minion.TakeDamage(currentAbility.damage); // Apply IronMaelstorm damage
-                    if (minion.health <= 0)
+                    enemyAnimator.SetTrigger("hit");
+                    enemy.TakeDamage(currentAbility.damage); // Apply IronMaelstorm damage
+                    if (enemy.health <= 0)
                     {
-                        playerController.GainXP(10);
+                        playerController.GainXP(enemy.getXp());
                     }
                 }
             }

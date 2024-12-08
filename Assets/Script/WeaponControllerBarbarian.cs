@@ -21,15 +21,15 @@ public class WeaponControllerBarbarian : MonoBehaviour
                     other.transform.rotation
                 );
                 Destroy(particleInstance, 2.0f);
-                Minion minion = other.GetComponent<Minion>();
-                Animator minionAnimator = minion.GetComponent<Animator>();
+                Enemy enemy = other.GetComponent<Enemy>();
+                Animator enemyAnimator = enemy.GetComponent<Animator>();
                 PlayerController playerController = GetComponent<PlayerController>();
-                if (minion != null)
+                if (enemy != null)
                 {
-                    minionAnimator.SetTrigger("hit");
-                    minion.TakeDamage(barbarian.currentAbility.damage); // Apply IronMaelstorm damage
+                    enemyAnimator.SetTrigger("hit");
+                    enemy.TakeDamage(barbarian.currentAbility.damage); // Apply IronMaelstorm damage
 
-                    if (minion.health <= 0)
+                    if (enemy.health <= 0)
                     {
                         playerController.GainXP(10);
                     }
