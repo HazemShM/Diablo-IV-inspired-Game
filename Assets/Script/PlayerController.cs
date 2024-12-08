@@ -1,12 +1,23 @@
+using MagicPigGames;
 using System;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using TMPro;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] public ProgressBar hpbar;
+    [SerializeField] public ProgressBar xpbar;
+    [SerializeField] public TextMeshProUGUI hpText;
+    [SerializeField] public TextMeshProUGUI xpText;
+    [SerializeField] public TextMeshProUGUI levelText;
+    [SerializeField] public TextMeshProUGUI abilityPointsText;
+    [SerializeField] public TextMeshProUGUI healingPotionsText;
+    [SerializeField] public TextMeshProUGUI runeFragmentsText;
+
     [SerializeField]
     private InputAction movement = new InputAction();
 
@@ -31,12 +42,18 @@ public class PlayerController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         OnSpeedChanged += SetSpeed;
         animator = GetComponent<Animator>();
+        updateHP(currentHP);
+        updateXP(currentXP);
+        levelText.text = $"Level {currentLevel}";
+        abilityPointsText.text = $"Ability Points: {abilityPoints}";
     }
 
     public void TakeDamage(int damage)
     {
         currentHP -= damage;
         Debug.Log($"Player took {damage} damage! Current health: {currentHP}");
+
+        updateHP(currentHP);
 
         if (currentHP <= 0)
         {
@@ -48,6 +65,8 @@ public class PlayerController : MonoBehaviour
     {
         currentXP += xp;
         Debug.Log($"Gained {xp} XP. Current XP: {currentXP}/{maxXP}");
+
+        updateXP(currentXP);
 
         while (currentXP >= maxXP && currentLevel < 4)
         {
@@ -63,6 +82,12 @@ public class PlayerController : MonoBehaviour
         currentHP = maxHP;
         currentXP -= maxXP;
         maxXP = 100 * currentLevel;
+
+        updateHP(currentHP);
+        updateXP(currentXP);
+
+        levelText.text = $"Level {currentLevel}";
+        abilityPointsText.text = $"Ability Points: {abilityPoints}";
 
         Debug.Log(
             $"Level up! New Level: {currentLevel}, Ability Points: {abilityPoints}, Max HP: {maxHP}, Current XP: {currentXP}"
@@ -121,5 +146,19 @@ public class PlayerController : MonoBehaviour
     public void SetSpeed(float speed)
     {
         animator.SetFloat(movementSpeed, speed);
+    }
+
+    public void updateHP(float hp)
+    {
+        float progress = (float)hp / maxHP;
+        hpbar?.SetProgress(progress);
+        hpText.text = $"{hp}";
+    }
+
+    public void updateXP(float xp)
+    {
+        float progress = (float)xp / maxXP;
+        xpbar?.SetProgress(progress);
+        xpText.text = $"{xp}";
     }
 }
