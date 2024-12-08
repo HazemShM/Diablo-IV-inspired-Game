@@ -10,6 +10,8 @@ public class Arrow : MonoBehaviour
         
     }   
     private void OnTriggerEnter(Collider other){
-        Destroy(transform.GetComponent<Rigidbody>());
+        if(other.CompareTag("Enemy")){
+            Destroy(transform.GetComponent<Rigidbody>());
+        }
     }
 }

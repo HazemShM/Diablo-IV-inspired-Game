@@ -12,7 +12,6 @@ public class Minion : MonoBehaviour
     }
 
     public MinionState currentState;
-    public float health = 20f;
     public int attackDamage = 5;
     public float damageInterval = 2f;
     private bool isPlayerInRange = false;
@@ -88,28 +87,7 @@ public class Minion : MonoBehaviour
             MinionAnimator.SetBool("punch", false);
         }
 
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
 
-    public void TakeDamage(float damageAmount)
-    {
-        health -= damageAmount;
-        Debug.Log("Minion Health: " + health);
-
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        MinionAnimator.SetTrigger("die");
-        agent.isStopped = true;
-        Destroy(gameObject, 3f);
     }
 
     private void OnTriggerEnter(Collider other)
