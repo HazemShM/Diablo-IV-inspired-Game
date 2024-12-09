@@ -118,6 +118,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4381144083943094939}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8415612933515648149}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 735262963895260796}
   m_SourcePrefab: {fileID: 100100000, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
 --- !u!4 &4047484327243133103 stripped
 Transform:
@@ -163,6 +169,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e779dcabf3e1f84988972cbde565f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hpbar: {fileID: 0}
+  xpbar: {fileID: 0}
+  hpText: {fileID: 0}
+  xpText: {fileID: 0}
+  levelText: {fileID: 0}
+  abilityPointsText: {fileID: 0}
+  healingPotionsText: {fileID: 0}
+  runeFragmentsText: {fileID: 0}
   movement:
     m_Name: Movement
     m_Type: 0
@@ -232,3 +246,51 @@ CapsuleCollider:
   m_Height: 1.8432406
   m_Direction: 1
   m_Center: {x: 0.0038654695, y: 0.88126916, z: -0.020680888}
+--- !u!65 &8415612933515648149
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7986712324874836029}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 0.6889084, y: 2.369137, z: 1}
+  m_Center: {x: 0.017159581, y: 0.6845689, z: 0}
+--- !u!54 &735262963895260796
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7986712324874836029}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
