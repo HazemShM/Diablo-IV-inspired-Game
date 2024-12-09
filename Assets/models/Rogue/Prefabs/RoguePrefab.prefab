@@ -14,27 +14,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.1
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 328
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 118
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -42,15 +42,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -123,7 +123,7 @@ PrefabInstance:
       addedObject: {fileID: 8415612933515648149}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 735262963895260796}
+      addedObject: {fileID: 6695903716648940244}
   m_SourcePrefab: {fileID: 100100000, guid: f403268805c00ba45a6178e5afff70ea, type: 3}
 --- !u!4 &4047484327243133103 stripped
 Transform:
@@ -177,16 +177,20 @@ MonoBehaviour:
   abilityPointsText: {fileID: 0}
   healingPotionsText: {fileID: 0}
   runeFragmentsText: {fileID: 0}
+  basicCooldownText: {fileID: 0}
+  wildcardCooldownText: {fileID: 0}
+  defensiveCooldownText: {fileID: 0}
+  ultimateCooldownText: {fileID: 0}
   movement:
     m_Name: Movement
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 19f53918-8aab-4318-96a6-44d729537584
+    m_Id: 5d3f7e91-5e5a-489b-bce6-726d049daa8a
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: 6d4fa540-205f-4814-9336-4ed51a21107e
+      m_Id: 79be1ad1-d83b-4a65-b3da-28159e2ca6f4
       m_Path: <Mouse>/leftButton
       m_Interactions: 
       m_Processors: 
@@ -267,7 +271,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6889084, y: 2.369137, z: 1}
   m_Center: {x: 0.017159581, y: 0.6845689, z: 0}
---- !u!54 &735262963895260796
+--- !u!54 &6695903716648940244
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
