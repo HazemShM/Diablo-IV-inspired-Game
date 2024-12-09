@@ -78,7 +78,9 @@ public class Minion : MonoBehaviour
                 }
                 else
                 {
-                    agent.isStopped = false;
+                    if(GetComponent<Enemy>().health > 0){
+                        agent.isStopped = false;
+                    }
                     agent.SetDestination(player.position);
                     MinionAnimator.SetBool("run", true);
                     MinionAnimator.SetBool("idle", false);
@@ -98,7 +100,9 @@ public class Minion : MonoBehaviour
             }
             else
             {
-                agent.isStopped = false;
+                if(GetComponent<Enemy>().health > 0){
+                    agent.isStopped = false;
+                }
                 agent.SetDestination(originalPosition); // Move back to the original position
                 MinionAnimator.SetBool("run", true);
                 MinionAnimator.SetBool("idle", false);

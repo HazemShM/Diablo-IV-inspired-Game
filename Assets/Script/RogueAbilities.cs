@@ -176,7 +176,7 @@ public class RogueAbilities : MonoBehaviour
         RaycastHit hit;
         Vector3 targetPosition;
 
-        if (Physics.Raycast(ray, out hit, 100))
+        if (Physics.Raycast(ray, out hit, 100,layerMask))
         {
             Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 2f);
             if (hit.collider.CompareTag("Enemy"))
@@ -314,7 +314,7 @@ public class RogueAbilities : MonoBehaviour
                 randomPos,
                 Quaternion.LookRotation(Vector3.down)
             );
-            
+            arrow.GetComponent<Arrow>().enableDamage = false;
             Rigidbody rb = arrow.GetComponent<Rigidbody>();
             rb.AddForce(Vector3.down * 25f, ForceMode.Impulse);
             Destroy(arrow, 2);
@@ -329,7 +329,9 @@ public class RogueAbilities : MonoBehaviour
     }
 
     private IEnumerator ApplySlowEffect(GameObject enemy, float slowMultiplier, float duration)
-    {
+    {   if(enemy==null){
+            yield break;
+        }
         NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
         if (agent != null)
         {
@@ -342,15 +344,71 @@ public class RogueAbilities : MonoBehaviour
         }
     }
 
+    // private IEnumerator SmokeBomb()
+    // {
+    //     animator.SetTrigger("SmokeBomb");
+    //     yield return new WaitForSeconds(0.5f);
+
+    //     GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
+    //     Destroy(smoke, 2);
+    //     Debug.Log("Smoke bomb dropped!");
+    //     isUsingAbility = false;
+    // }
     private IEnumerator SmokeBomb()
     {
+        float stunRadius = 3f; 
+
         animator.SetTrigger("SmokeBomb");
         yield return new WaitForSeconds(0.5f);
 
         GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
         Destroy(smoke, 2);
         Debug.Log("Smoke bomb dropped!");
+
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, stunRadius, layerMask);
+
+        foreach (Collider enemyCollider in hitEnemies)
+        {
+            if (enemyCollider.CompareTag("Enemy"))
+            {
+                GameObject enemy = enemyCollider.gameObject;
+                StartCoroutine(StunEnemy(enemy, 5f));
+            }
+        }
+
         isUsingAbility = false;
+    }
+    private IEnumerator StunEnemy(GameObject enemy, float stunDuration)
+    {
+        Animator enemyAnimator = enemy.GetComponent<Animator>();
+        MonoBehaviour[] enemyScripts = enemy.GetComponents<MonoBehaviour>();
+        Enemy enemyS = enemy.GetComponent<Enemy>();
+
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.enabled = false;
+        }
+
+        foreach (MonoBehaviour script in enemyScripts)
+        {
+            script.enabled = false;
+        }
+
+        Debug.Log($"{enemy.name} is stunned!");
+
+        yield return new WaitForSeconds(stunDuration);
+
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.enabled = true;
+        }
+
+        foreach (MonoBehaviour script in enemyScripts)
+        {
+            script.enabled = true;
+        }
+
+        Debug.Log($"{enemy.name} is no longer stunned!");
     }
 
     private IEnumerator Dash()

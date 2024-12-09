@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     Animator animator ;
     private NavMeshAgent agent;
     public int xp = 10;
+
     void Start(){
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
@@ -24,14 +25,12 @@ public class Enemy : MonoBehaviour
     {
         health -= damageAmount;
         Debug.Log("Minion Health: " + health);
-        if(health<=0){
-            animator.SetTrigger("die");
-        }
     }
 
     private void Die()
     {
         agent.isStopped = true;
+        animator.SetTrigger("die");
         Destroy(gameObject, 3f);
     }
     public void setHealth(float health){

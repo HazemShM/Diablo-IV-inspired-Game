@@ -469,6 +469,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4734459520109061473, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
+      propertyPath: attackRange
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7194755193643001097, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10.829091
@@ -526,6 +530,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4381144083943094939, guid: 2eabfc52fc810404aadb3b0e94ebce80, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7322096701330047623, guid: 2eabfc52fc810404aadb3b0e94ebce80, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -570,6 +578,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoguePrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 7986712324874836029, guid: 2eabfc52fc810404aadb3b0e94ebce80, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8415612933515648149, guid: 2eabfc52fc810404aadb3b0e94ebce80, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -612,7 +628,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 6, z: 6}
+  m_Size: {x: 20, y: 6, z: 20}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1097311686
 Transform:
@@ -744,6 +760,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4734459520109061473, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
+      propertyPath: attackRange
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7194755193643001097, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.445862
@@ -801,6 +821,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4734459520109061473, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
+      propertyPath: attackRange
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7194755193643001097, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.814586
