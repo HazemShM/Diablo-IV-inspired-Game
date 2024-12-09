@@ -14,53 +14,57 @@ public class LilithAnimation : MonoBehaviour
     GameObject Bloodspikes;
 
     [SerializeField]
-    private int maxMinions = 3; // Maximum number of minions
+    private int maxMinions = 3;
 
     [SerializeField]
-    private List<GameObject> activeMinions = new List<GameObject>(); // List to track active minions
+    public List<GameObject> activeMinions = new List<GameObject>();
 
     [SerializeField]
-    private string Phase = "Phase1";
+    public string Phase = "Phase1";
 
     [SerializeField]
     GameObject shield; // Shield (Phase 2)
 
     [SerializeField]
-    private float shieldHealth = 50f; // Shield health (Phase 2)
+    public float shieldHealth = 50f; // Shield health (Phase 2)
 
     [SerializeField]
-    private float bossHealth = 50f; // Boss health in both phases (Phase 1 & 2)
-    private bool isShieldActive = false; // Tracks if Lilith's shield is active (Phase 2)
+    public float bossHealth = 50f; // Boss health in both phases (Phase 1 & 2)
+
+    public bool isShieldActive = false; // Tracks if Lilith's shield is active (Phase 2)
+
     AudioSource ac;
     public AudioClip BloodSpikesSound;
     public AudioClip DiveBombSound;
     public AudioClip ShieldSound;
     public AudioClip SummonSound;
 
-    private bool hasDestroyedMinion = false; //TEST
+    private GameObject shieldInstance;
+    private float diveBombRadius = 10f;
 
     void Start()
     {
         animator = GetComponent<Animator>();
         ac = GetComponent<AudioSource>();
         //StartCoroutine(ReflectiveAura());
-        // StartCoroutine(DiveBomb());
-        // SummonMinions();
-        BloodSpikes();
+        //StartCoroutine(DiveBomb());
+        SummonMinions();
     }
 
     void Update()
     {
-        // SummonMinions();  // Shouldn't be put in Update() (As per TA Abdelrahman)
+        if (isShieldActive && shieldHealth <= 0)
+        {
+            CheckShieldDestroyed();
+        }
     }
 
-    public void SummonMinions() // Needs better logic here
+    public void SummonMinions()
     {
-        // Check if the activeMinions list is empty
         if (activeMinions.Count == 0)
         {
             animator.SetTrigger("Summon");
-            StartCoroutine(SummonMinionsWithDelay(1.2f)); // 1.2 seconds delay before summoning (to match with the end of the animation)
+            StartCoroutine(SummonMinionsWithDelay(1.2f));
         }
         else
         {
@@ -70,14 +74,12 @@ public class LilithAnimation : MonoBehaviour
 
     private IEnumerator SummonMinionsWithDelay(float delay)
     {
-        yield return new WaitForSeconds(delay); // wait for the delay (1.2 seconds)
-        // Summon minions after the delay
-        if (activeMinions.Count == 0) // Double-check to avoid duplicates
+        yield return new WaitForSeconds(delay);
+        if (activeMinions.Count == 0)
         {
             ac.PlayOneShot(SummonSound);
             for (int i = 0; i < maxMinions; i++)
             {
-                // Calculate a random position within a 5-unit range from Lilith's position
                 Vector3 randomPosition = new Vector3(
                     transform.position.x + Random.Range(-5f, 5f),
                     transform.position.y + 1,
@@ -86,9 +88,7 @@ public class LilithAnimation : MonoBehaviour
                 GameObject minion = Instantiate(minions, randomPosition, Quaternion.identity);
                 activeMinions.Add(minion);
             }
-            animator.SetInteger("ActiveMinions", 3);
-
-            Debug.Log($"{activeMinions.Count} minions summoned!");
+            animator.SetInteger("ActiveMinions", activeMinions.Count);
         }
     }
 
@@ -97,18 +97,57 @@ public class LilithAnimation : MonoBehaviour
         animator.SetTrigger("Divebomb");
         yield return new WaitForSeconds(1.5f);
         ac.PlayOneShot(DiveBombSound);
+
+        Vector3 centerPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        Collider[] hitColliders = Physics.OverlapSphere(centerPosition, diveBombRadius);
+        Debug.Log("DiveBomb triggered!");
+
+        foreach (Collider collider in hitColliders)
+        {
+            if (collider.CompareTag("Player"))
+            {
+                PlayerController playerController = collider.GetComponent<PlayerController>();
+                if (playerController != null)
+                {
+                    playerController.TakeDamage(20);
+                    Debug.Log("Player hit by DiveBomb!");
+                }
+            }
+        }
     }
 
     public IEnumerator ReflectiveAura()
     {
         animator.SetTrigger("ReflectiveAura");
         isShieldActive = true;
-        Vector3 spawnPosition = new Vector3(transform.position.x, 0, transform.position.z);
-        Quaternion spawnRotation = Quaternion.identity; // No rotation
+        shieldHealth = 50f;
+
+        Vector3 spawnPosition = transform.position;
+        Quaternion spawnRotation = Quaternion.identity;
         yield return new WaitForSeconds(0.2f);
         ac.PlayOneShot(ShieldSound);
         yield return new WaitForSeconds(1.5f);
-        GameObject bloodspikesInstance = Instantiate(shield, spawnPosition, spawnRotation);
+        shieldInstance = Instantiate(shield, spawnPosition, spawnRotation);
+        shieldInstance.transform.SetParent(transform);
+
+        // Update position every frame while shield is active
+        while (isShieldActive)
+        {
+            if (shieldInstance != null)
+            {
+                Vector3 shieldPosition = shieldInstance.transform.position;
+                shieldInstance.transform.position = new Vector3(transform.position.x, shieldPosition.y, transform.position.z);
+            }
+            yield return null; // Wait for the next frame
+        }
+    }
+
+
+    public void CheckShieldDestroyed()
+    {
+        isShieldActive = false;
+        Destroy(shieldInstance);
+        Debug.Log("Shield destroyed!");
     }
 
     public void BloodSpikes()
@@ -120,29 +159,21 @@ public class LilithAnimation : MonoBehaviour
     private IEnumerator SpawnAndAnimateBloodSpikes(float delay)
     {
         yield return new WaitForSeconds(delay);
-        Vector3 spawnPosition = transform.position + transform.forward * 5.0f; // 5 units in front of Lilith
+        Vector3 spawnPosition = transform.position + transform.forward * 5.0f;
         spawnPosition.y = -4;
         GameObject bloodspikes = Instantiate(
             Bloodspikes,
             spawnPosition,
             Quaternion.LookRotation(transform.forward)
         );
+
         yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, 0, 1.0f));
         ac.PlayOneShot(BloodSpikesSound);
         yield return new WaitForSeconds(1.8f);
-        ac.PlayOneShot(BloodSpikesSound);
-        yield return new WaitForSeconds(0.2f);
-        yield return StartCoroutine(MoveBloodSpikes(bloodspikes, 0, -4, 1.0f));
-
         Destroy(bloodspikes);
     }
 
-    private IEnumerator MoveBloodSpikes(
-        GameObject bloodspikes,
-        float startY,
-        float endY,
-        float duration
-    )
+    private IEnumerator MoveBloodSpikes(GameObject bloodspikes, float startY, float endY, float duration)
     {
         float elapsedTime = 0f;
         Vector3 startPosition = bloodspikes.transform.position;
@@ -158,5 +189,58 @@ public class LilithAnimation : MonoBehaviour
             yield return null;
         }
         bloodspikes.transform.position = endPosition;
+    }
+
+    public void TakeDamage(float damageAmount, PlayerController playerController)
+    {
+        if (isShieldActive)
+        {
+            shieldHealth -= damageAmount;
+            Debug.Log($"Shield health: {shieldHealth}");
+            playerController.ReflectDamage(15);
+            Debug.Log($"Player health: {playerController.hpbar}");
+            if (shieldHealth <= 0)
+            {
+                float excessDamage = Mathf.Abs(shieldHealth);
+                shieldHealth = 0;
+                isShieldActive = false;
+                Destroy(shieldInstance);
+                Debug.Log("Shield destroyed!");
+
+                if (excessDamage > 0)
+                {
+                    Debug.Log($"Excess damage of {excessDamage} applied to Lilith.");
+                    bossHealth -= excessDamage;
+
+                }
+            }
+            return;
+        }
+        bossHealth -= damageAmount;
+        Debug.Log($"Lilith's Health: {bossHealth}");
+        animator.SetTrigger("Hit");
+        if (bossHealth <= 0)
+        {
+            if (Phase == "Phase2")
+            {
+                Die();
+            }
+            else if (Phase == "Phase1")
+            {
+                TransitionToPhase2();
+            }
+        }
+    }
+    private void Die()
+    {
+        animator.SetTrigger("Die");
+        Destroy(gameObject, 3f);
+    }
+
+    private void TransitionToPhase2()
+    {
+        Phase = "Phase2";
+        bossHealth = 100;
+        Debug.Log("Transitioning to Phase 2...");
     }
 }

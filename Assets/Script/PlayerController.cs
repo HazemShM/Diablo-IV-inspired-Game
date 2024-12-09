@@ -161,4 +161,10 @@ public class PlayerController : MonoBehaviour
         xpbar?.SetProgress(progress);
         xpText.text = $"{xp}";
     }
+
+    public void ReflectDamage(int reflectedDamage)
+    {
+        Debug.Log($"Player took {reflectedDamage} reflected damage from Lilith's shield!");
+        TakeDamage(reflectedDamage);
+    }
 }

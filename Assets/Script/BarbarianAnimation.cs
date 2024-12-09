@@ -123,39 +123,58 @@ public class BarbarianAnimation : MonoBehaviour
             Debug.LogWarning("No target selected!");
             return;
         }
+
         Vector3 directionToTarget = (selectedTarget.position - transform.position).normalized;
         directionToTarget.y = 0;
         transform.rotation = Quaternion.LookRotation(directionToTarget);
 
-        Enemy enemy = selectedTarget.GetComponent<Enemy>();
-        Animator enemyAnimator = enemy.GetComponent<Animator>();
-        if (enemy != null)
+        LilithAnimation lilith = selectedTarget.GetComponent<LilithAnimation>();
+        Animator lilithAnimator = lilith != null ? lilith.GetComponent<Animator>() : null;
+
+        if (lilith != null)
         {
+            if (lilith.activeMinions.Count > 0)
+            {
+                Debug.Log("There are active minions. Kill them first before damaging Lilith!");
+                return;
+            }
+            if (lilith.isShieldActive)
+            {
+                lilith.shieldHealth -= currentAbility.damage;
+                Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+
+                if (lilith.shieldHealth <= 0)
+                {
+                    lilith.CheckShieldDestroyed();
+                }
+                else
+                {
+                    Debug.Log("Lilith's shield absorbed the damage!");
+                }
+            }
+            else
+            {
+                lilith.TakeDamage(currentAbility.damage, playerController);
+                Debug.Log($"Lilith's Health: {lilith.bossHealth}");
+            }
             GameObject particleInstance = Instantiate(
                 hitParticle,
                 new Vector3(
-                    enemy.transform.position.x,
+                    lilith.transform.position.x,
                     transform.position.y,
-                    enemy.transform.position.z
+                    lilith.transform.position.z
                 ),
-                enemy.transform.rotation
+                lilith.transform.rotation
             );
             Destroy(particleInstance, 2.0f);
-            enemyAnimator.SetTrigger("hit");
-            enemy.TakeDamage(currentAbility.damage); // Deal damage
-            Debug.Log(enemy.health);
-            if (enemy.health <= 0)
-            {
-                playerController.GainXP(enemy.getXp());
-            }
         }
-
         canAttack = false;
         anim.SetTrigger("Bash");
         ac.PlayOneShot(bashAttackSound);
         StartCoroutine(AttackCooldownBash());
         selectedTarget = null;
     }
+
 
     public void Charge()
     {
@@ -182,18 +201,29 @@ public class BarbarianAnimation : MonoBehaviour
                     other.transform.rotation
                 );
                 Destroy(particleInstance, 2.0f);
-                Enemy enemy = other.GetComponent<Enemy>();
-                Animator enemyAnimator = enemy.GetComponent<Animator>();
-                if (enemy != null)
+                LilithAnimation lilith = other.GetComponent<LilithAnimation>();
+
+                if (lilith != null)
                 {
-                    enemyAnimator.SetTrigger("hit");
-                    enemy.TakeDamage(currentAbility.damage); // Apply IronMaelstorm damage
-                    if (enemy.health <= 0)
+                    if (lilith.isShieldActive)
                     {
-                        playerController.GainXP(enemy.getXp());
+                        lilith.shieldHealth -= currentAbility.damage;
+                        if (lilith.shieldHealth <= 0)
+                        {
+                            lilith.CheckShieldDestroyed();
+                        }
+                    }
+                    else
+                    {
+                        lilith.TakeDamage(currentAbility.damage, playerController);
                     }
                 }
             }
+        }
+        else if (other.CompareTag("Spikes"))
+        {
+            playerController.TakeDamage(30);
+            Debug.Log($"Player hit spikes, -30 hp, Player Health: {playerController.currentHP}");
         }
     }
 
@@ -221,7 +251,7 @@ public class BarbarianAnimation : MonoBehaviour
             Debug.LogWarning("Target position is not on a valid NavMesh!");
             anim.SetBool("isCharging", false);
             canAttack = true;
-            yield break; // Stop the coroutine if the target is not valid
+            yield break;
         }
 
         target = hit.position;
@@ -263,7 +293,7 @@ public class BarbarianAnimation : MonoBehaviour
     private IEnumerator AttackCooldownIronMaelstorm()
     {
         yield return new WaitForSeconds(1.5f);
-        canAttack = true; // Re-enable other actions
+        canAttack = true;
     }
 
     private void OnEnable()

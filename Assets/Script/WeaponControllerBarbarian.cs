@@ -22,16 +22,45 @@ public class WeaponControllerBarbarian : MonoBehaviour
                 );
                 Destroy(particleInstance, 2.0f);
                 Enemy enemy = other.GetComponent<Enemy>();
-                Animator enemyAnimator = enemy.GetComponent<Animator>();
+                LilithAnimation lilith = other.GetComponent<LilithAnimation>();
                 PlayerController playerController = GetComponent<PlayerController>();
                 if (enemy != null)
                 {
-                    enemyAnimator.SetTrigger("hit");
+                    Animator enemyAnimator = enemy.GetComponent<Animator>();
+                    enemyAnimator?.SetTrigger("hit");
                     enemy.TakeDamage(barbarian.currentAbility.damage); // Apply IronMaelstorm damage
-
+                    
                     if (enemy.health <= 0)
                     {
                         playerController.GainXP(10);
+                    }
+                }
+                else if (lilith != null)
+                {
+                    Animator lilithAnimator = lilith.GetComponent<Animator>();
+                    lilithAnimator.SetTrigger("hit");
+                    if(lilith.activeMinions.Count > 0)
+                    {
+                        Debug.Log("kill minions first");
+                    }
+                    else if (lilith.isShieldActive)
+                    {
+                        lilith.shieldHealth -= barbarian.currentAbility.damage;
+                        Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                        if (lilith.shieldHealth <= 0)
+                        {
+                            lilith.CheckShieldDestroyed();
+                        }
+                        else
+                        {
+                            Debug.Log("Lilith's shield absorbed the damage!");
+                            Debug.Log($"player health: {playerController.currentHP}");
+                        }
+                    }
+                    else
+                    {
+                        lilith.TakeDamage(barbarian.currentAbility.damage, playerController);
+                        Debug.Log($"Lilith's Health: {lilith.bossHealth}");
                     }
                 }
             }
