@@ -35,15 +35,13 @@ public class Enemy : MonoBehaviour
         health -= damageAmount;
         healthBar.UpdateHealthBar(health, maxHealth);
         Debug.Log("Minion Health: " + health);
-        if(health<=0){
-            animator.SetTrigger("die");
-        }
     }
 
     private void Die()
     {
         agent.isStopped = true;
         playerObject.GetComponent<PlayerController>().GainXP(xp);
+        animator.SetTrigger("die");
         Destroy(gameObject, 3f);
     }
     public void setHealth(float health){
