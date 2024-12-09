@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class BarbarianAnimation : MonoBehaviour
 {
@@ -144,10 +146,6 @@ public class BarbarianAnimation : MonoBehaviour
             enemyAnimator.SetTrigger("hit");
             enemy.TakeDamage(currentAbility.damage); // Deal damage
             Debug.Log(enemy.health);
-            if (enemy.health <= 0)
-            {
-                playerController.GainXP(enemy.getXp());
-            }
         }
 
         canAttack = false;
@@ -165,94 +163,124 @@ public class BarbarianAnimation : MonoBehaviour
         Debug.Log("Charge ability activated! Use right-click to select the charge target.");
         StartCoroutine(ChargeSequence());
     }
-
+    private List<Enemy> enemiesInRange = new List<Enemy>();
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Enemy" && !canAttack)
+        if (other.CompareTag("Enemy"))
         {
-            if (currentAbility.type == AbilityType.Ultimate && isCharging)
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null && !enemiesInRange.Contains(enemy))
             {
+                enemiesInRange.Add(enemy);
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null && enemiesInRange.Contains(enemy))
+            {
+                enemiesInRange.Remove(enemy);
+            }
+        }
+    }
+
+    public void ApplyChargeDamage()
+    {
+        if (currentAbility.type == AbilityType.Ultimate && isCharging)
+        {
+            foreach (Enemy enemy in enemiesInRange)
+            {
+                if (enemy == null) continue; // Skip if enemy has been destroyed
+
+                Animator enemyAnimator = enemy.GetComponent<Animator>();
+                if (enemyAnimator != null)
+                {
+                    enemyAnimator.SetTrigger("hit");
+                }
+
                 GameObject particleInstance = Instantiate(
                     hitParticle,
                     new Vector3(
-                        other.transform.position.x,
+                        enemy.transform.position.x,
                         transform.position.y,
-                        other.transform.position.z
+                        enemy.transform.position.z
                     ),
-                    other.transform.rotation
+                    enemy.transform.rotation
                 );
                 Destroy(particleInstance, 2.0f);
-                Enemy enemy = other.GetComponent<Enemy>();
-                Animator enemyAnimator = enemy.GetComponent<Animator>();
-                if (enemy != null)
-                {
-                    enemyAnimator.SetTrigger("hit");
-                    enemy.TakeDamage(currentAbility.damage); // Apply IronMaelstorm damage
-                    if (enemy.health <= 0)
-                    {
-                        playerController.GainXP(enemy.getXp());
-                    }
-                }
+
+                enemy.TakeDamage(currentAbility.damage); // Apply damage
             }
         }
     }
 
     private IEnumerator ChargeSequence()
+{
+    Vector3? targetPosition = null;
+
+    // Wait for user to select a target position
+    while (targetPosition == null)
     {
-        Vector3? targetPosition = null;
-        while (targetPosition == null)
+        if (Mouse.current.rightButton.wasPressedThisFrame)
         {
-            if (Mouse.current.rightButton.wasPressedThisFrame)
+            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
             {
-                Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-                if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
-                {
-                    targetPosition = hit1.point;
-                    Debug.Log("Target position set: " + targetPosition);
-                }
+                targetPosition = hit1.point;
+                Debug.Log("Target position set: " + targetPosition);
             }
-            yield return null;
         }
+        yield return null;
+    }
 
-        Vector3 target = targetPosition.Value;
-        NavMeshHit hit;
-        if (!NavMesh.SamplePosition(target, out hit, 2.0f, NavMesh.AllAreas))
-        {
-            Debug.LogWarning("Target position is not on a valid NavMesh!");
-            anim.SetBool("isCharging", false);
-            canAttack = true;
-            yield break; // Stop the coroutine if the target is not valid
-        }
-
-        target = hit.position;
-        Vector3 directionToTarget = (target - transform.position).normalized;
-        directionToTarget.y = 0;
-        transform.rotation = Quaternion.LookRotation(directionToTarget);
-
-        agent.isStopped = true;
-        anim.SetBool("isCharging", true);
-        anim.SetTrigger("Charge");
-
-        float chargeSpeed = 10f;
-
-        while (Vector3.Distance(transform.position, target) > 0.1f)
-        {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                target,
-                chargeSpeed * Time.deltaTime
-            );
-            isCharging = true;
-            yield return null;
-        }
-
-        agent.isStopped = false;
-        agent.ResetPath();
-
+    Vector3 target = targetPosition.Value;
+    NavMeshHit hit;
+    if (!NavMesh.SamplePosition(target, out hit, 2.0f, NavMesh.AllAreas))
+    {
+        Debug.LogWarning("Target position is not on a valid NavMesh!");
         anim.SetBool("isCharging", false);
         canAttack = true;
-        isCharging = false;
+        yield break; // Stop the coroutine if the target is not valid
     }
+
+    target = hit.position;
+    Vector3 directionToTarget = (target - transform.position).normalized;
+    directionToTarget.y = 0;
+    transform.rotation = Quaternion.LookRotation(directionToTarget);
+
+    agent.isStopped = true;
+
+    anim.SetBool("isCharging", true);
+    anim.SetTrigger("Charge");
+
+    float chargeSpeed = 10f;
+
+    isCharging = true;
+
+    while (Vector3.Distance(transform.position, target) > 0.1f)
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            target,
+            chargeSpeed * Time.deltaTime
+        );
+
+        // Apply damage continuously during charge
+        ApplyChargeDamage();
+        yield return null;
+    }
+
+    agent.isStopped = false;
+    agent.ResetPath();
+
+    isCharging = false;
+    anim.SetBool("isCharging", false);
+    canAttack = true;
+}
 
     private IEnumerator AttackCooldownBash()
     {

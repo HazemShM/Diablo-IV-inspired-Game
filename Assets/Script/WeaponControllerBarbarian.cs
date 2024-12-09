@@ -28,11 +28,6 @@ public class WeaponControllerBarbarian : MonoBehaviour
                 {
                     enemyAnimator.SetTrigger("hit");
                     enemy.TakeDamage(barbarian.currentAbility.damage); // Apply IronMaelstorm damage
-
-                    if (enemy.health <= 0)
-                    {
-                        playerController.GainXP(10);
-                    }
                 }
             }
         }
