@@ -92,6 +92,7 @@ public class SorcererAbilityManager : MonoBehaviour
 
         // Teleport the player to the clicked position
         transform.position = targetPos;
+        GetComponent<NavMeshAgent>().SetDestination(targetPos);
         Time.timeScale = 1f;
         yield return new WaitForSeconds(0.5f); // Allow the animation to finish
     }
@@ -119,6 +120,9 @@ public class SorcererAbilityManager : MonoBehaviour
         }
 
         GameObject clone = Instantiate(clonePrefab, targetPos, Quaternion.identity);
+        clone.GetComponent<PlayerController>().enabled = false;
+        clone.GetComponent<SorcererAbilityManager>().enabled = false;
+
         Destroy(clone, cloneDuration);
         Time.timeScale = 1f;
         yield return new WaitForSeconds(0.5f); // Allow animation to finish
@@ -175,7 +179,7 @@ public class SorcererAbilityManager : MonoBehaviour
         // Start waiting for the mouse click
         yield return StartCoroutine(WaitForMouseClick(pos =>
         {
-            targetPos = pos;
+            targetPos = new Vector3(pos.x,transform.position.y,pos.z);
             clickCompleted = true;
         }));
 

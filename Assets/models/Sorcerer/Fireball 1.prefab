@@ -175,10 +175,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 397444189245678073}
-  - component: {fileID: 8468877808637699548}
   - component: {fileID: 1415112620205379850}
   - component: {fileID: 8804937916853735933}
-  - component: {fileID: 3142884232405677385}
   m_Layer: 0
   m_Name: Fireball 1
   m_TagString: Fireball
@@ -205,18 +203,6 @@ Transform:
   - {fileID: 765417996856927825}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8468877808637699548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8299014852744255962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 448cbfe58ba98784bb90e7d985d9d95a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &1415112620205379850
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -265,19 +251,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 8.196376, y: 2.1917777, z: 2.8638375}
   m_Center: {x: 2.8949504, y: 0.328968, z: -0.0051809475}
---- !u!114 &3142884232405677385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8299014852744255962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4daec60066ddb1418a551003d8f2574, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 20
 --- !u!1001 &4082342311233327254
 PrefabInstance:
   m_ObjectHideFlags: 0

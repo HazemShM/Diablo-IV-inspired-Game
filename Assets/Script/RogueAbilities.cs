@@ -274,7 +274,7 @@ public class RogueAbilities : MonoBehaviour
             ring.transform.localScale = new Vector3(radius, 1 , radius);
             Destroy(ring, duration);
             Collider[] hitEnemies = Physics.OverlapSphere(targetPosition, radius, layerMask);
-            DebugDrawSphere(targetPosition, radius, Color.red);
+            // DebugDrawSphere(targetPosition, radius, Color.red);
             foreach (Collider enemy in hitEnemies)
             {
                 if (enemy.CompareTag("Enemy"))
