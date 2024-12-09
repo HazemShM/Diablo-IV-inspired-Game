@@ -48,6 +48,19 @@ public class BarbarianAnimation : MonoBehaviour
     {
         foreach (var ability in abilities)
         {
+            if(ability.type == AbilityType.Basic){
+                playerController.basicCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+            else if(ability.type == AbilityType.WildCard){
+                playerController.wildcardCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+            else if(ability.type == AbilityType.Defensive){
+                playerController.defensiveCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+            else if(ability.type == AbilityType.Ultimate){
+                playerController.ultimateCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+
             if (ability.isOnCooldown)
             {
                 ability.cooldownTimer -= Time.deltaTime;

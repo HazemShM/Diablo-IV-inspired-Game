@@ -26,7 +26,7 @@ public class RogueAbilities : MonoBehaviour
     [SerializeField]
     private LayerMask layerMask = new LayerMask();
     bool isUsingAbility = false;
-    Ability currentAbility;
+    public Ability currentAbility;
     bool isDashing = false;
     [SerializeField]
     private GameObject hitParticle;

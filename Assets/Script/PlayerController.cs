@@ -17,12 +17,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public TextMeshProUGUI abilityPointsText;
     [SerializeField] public TextMeshProUGUI healingPotionsText;
     [SerializeField] public TextMeshProUGUI runeFragmentsText;
+    [SerializeField] public TextMeshProUGUI basicCooldownText;
+    [SerializeField] public TextMeshProUGUI wildcardCooldownText;
+    [SerializeField] public TextMeshProUGUI defensiveCooldownText;
+    [SerializeField] public TextMeshProUGUI ultimateCooldownText;
 
-    [SerializeField]
-    private InputAction movement = new InputAction();
-
-    [SerializeField]
-    public LayerMask layerMask = new LayerMask();
+    [SerializeField] private InputAction movement = new InputAction();
+    [SerializeField] public LayerMask layerMask = new LayerMask();
     private NavMeshAgent agent;
     private Camera cam;
     public event Action<float> OnSpeedChanged;
@@ -35,6 +36,8 @@ public class PlayerController : MonoBehaviour
     public int currentHP = 100;
     public int abilityPoints = 0;
     bool die = false;
+    BarbarianAnimation barbarian;
+    RogueAbilities rogue;
 
     private void Start()
     {
@@ -46,6 +49,17 @@ public class PlayerController : MonoBehaviour
         updateXP(currentXP);
         levelText.text = $"Level {currentLevel}";
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
+        barbarian = GetComponent<BarbarianAnimation>();
+        rogue = GetComponent<RogueAbilities>();
+    }
+
+        private void Update()
+    {
+        if (movement.ReadValue<float>() == 1)
+        {
+            HandleInput();
+        }
+        OnSpeedChanged?.Invoke(Mathf.Clamp01(agent.velocity.magnitude / agent.speed));
     }
 
     public void TakeDamage(int damage)
@@ -85,6 +99,8 @@ public class PlayerController : MonoBehaviour
 
         updateHP(currentHP);
         updateXP(currentXP);
+        // updateAbilityPoint(abilityPoints);
+        // updateLevel(currentLevel);
 
         levelText.text = $"Level {currentLevel}";
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
@@ -117,14 +133,6 @@ public class PlayerController : MonoBehaviour
         OnSpeedChanged -= SetSpeed;
     }
 
-    private void Update()
-    {
-        if (movement.ReadValue<float>() == 1)
-        {
-            HandleInput();
-        }
-        OnSpeedChanged?.Invoke(Mathf.Clamp01(agent.velocity.magnitude / agent.speed));
-    }
 
     public void HandleInput()
     {
@@ -160,5 +168,11 @@ public class PlayerController : MonoBehaviour
         float progress = (float)xp / maxXP;
         xpbar?.SetProgress(progress);
         xpText.text = $"{xp}";
+    }
+    public void updateLevel(int level){
+        levelText.text = $"{level}";
+    }
+    public void updateAbilityPoint(int point){
+        abilityPointsText.text = $"{point}";
     }
 }
