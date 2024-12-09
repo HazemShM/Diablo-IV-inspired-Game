@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 241
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -67,6 +67,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_Name
       value: Brute
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_TagString
@@ -139,8 +143,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.50000006, y: 0.5423583, z: 0.62364}
-  m_Center: {x: -0.0000010090157, y: 0.021179073, z: 0.8018181}
+  m_Size: {x: 0.50000006, y: 0.5423583, z: 0.81417465}
+  m_Center: {x: -0.0000032883931, y: 0.021179076, z: 0.7065476}
 --- !u!1 &6772498599744439899 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
@@ -201,6 +205,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e779dcabf3e1f84988972cbde565f94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hpbar: {fileID: 0}
+  xpbar: {fileID: 0}
+  hpText: {fileID: 0}
+  xpText: {fileID: 0}
+  levelText: {fileID: 0}
+  abilityPointsText: {fileID: 0}
+  healingPotionsText: {fileID: 0}
+  runeFragmentsText: {fileID: 0}
+  basicCooldownText: {fileID: 0}
+  wildcardCooldownText: {fileID: 0}
+  defensiveCooldownText: {fileID: 0}
+  ultimateCooldownText: {fileID: 0}
   movement:
     m_Name: Movement
     m_Type: 0

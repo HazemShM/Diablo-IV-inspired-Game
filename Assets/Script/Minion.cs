@@ -68,6 +68,9 @@ public class Minion : MonoBehaviour
             if (currentState == MinionState.Alerted)
             {
                 float distance = Vector3.Distance(transform.position, player.position);
+                Vector3 directionToTarget = (player.position - transform.position).normalized;
+                directionToTarget.y = 0;
+                transform.rotation = Quaternion.LookRotation(directionToTarget);
 
                 if (distance <= attackRange)
                 {
