@@ -27,7 +27,6 @@ public class Enemy : MonoBehaviour
         if (health <= 0 && !died)
         {
             Die();
-            died = true;
         }
     }
     public void TakeDamage(float damageAmount)
@@ -39,10 +38,11 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
+        died = true;
         agent.isStopped = true;
-        playerObject.GetComponent<PlayerController>().GainXP(xp);
         animator.SetTrigger("die");
         Destroy(gameObject, 3f);
+        playerObject.GetComponent<PlayerController>().GainXP(xp);
     }
     public void setHealth(float health){
         this.health = health;
