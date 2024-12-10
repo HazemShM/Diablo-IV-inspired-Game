@@ -40,7 +40,33 @@ public class PlayerController : MonoBehaviour
     RogueAbilities rogue;
 
     private void Start()
-    {
+    {   
+        hpbar = GameObject.FindWithTag("hpbar")?.GetComponent<HorizontalProgressBar>();
+        xpbar = GameObject.FindWithTag("xpbar")?.GetComponent<HorizontalProgressBar>();
+        hpText = GameObject.FindWithTag("hpText")?.GetComponent<TextMeshProUGUI>();
+        xpText = GameObject.FindWithTag("xpText")?.GetComponent<TextMeshProUGUI>();
+        levelText = GameObject.FindWithTag("levelText")?.GetComponent<TextMeshProUGUI>();
+        abilityPointsText = GameObject.FindWithTag("abilityPointsText")?.GetComponent<TextMeshProUGUI>();
+        healingPotionsText = GameObject.FindWithTag("healingPotionsText")?.GetComponent<TextMeshProUGUI>();
+        runeFragmentsText = GameObject.FindWithTag("runeFragmentsText")?.GetComponent<TextMeshProUGUI>();
+        basicCooldownText = GameObject.FindWithTag("basicCooldownText")?.GetComponent<TextMeshProUGUI>();
+        wildcardCooldownText = GameObject.FindWithTag("wildcardCooldownText")?.GetComponent<TextMeshProUGUI>();
+        defensiveCooldownText = GameObject.FindWithTag("defensiveCooldownText")?.GetComponent<TextMeshProUGUI>();
+        ultimateCooldownText = GameObject.FindWithTag("ultimateCooldownText")?.GetComponent<TextMeshProUGUI>();
+        
+        if (hpbar == null) Debug.LogError("HP Bar GameObject not found!");
+        if (xpbar == null) Debug.LogError("XP Bar GameObject not found!");
+        if (hpText == null) Debug.LogError("HP Text UI not found!");
+        if (xpText == null) Debug.LogError("XP Text UI not found!");
+        if (levelText == null) Debug.LogError("Level Text UI not found!");
+        if (abilityPointsText == null) Debug.LogError("Ability Points Text UI not found!");
+        if (healingPotionsText == null) Debug.LogError("Healing Potions Text UI not found!");
+        if (runeFragmentsText == null) Debug.LogError("Rune Fragments Text UI not found!");
+        if (basicCooldownText == null) Debug.LogError("Basic Cooldown Text UI not found!");
+        if (wildcardCooldownText == null) Debug.LogError("Wildcard Cooldown Text UI not found!");
+        if (defensiveCooldownText == null) Debug.LogError("Defensive Cooldown Text UI not found!");
+        if (ultimateCooldownText == null) Debug.LogError("Ultimate Cooldown Text UI not found!");
+        
         cam = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         OnSpeedChanged += SetSpeed;
@@ -170,7 +196,7 @@ public class PlayerController : MonoBehaviour
         xpText.text = $"{xp}";
     }
     public void updateLevel(int level){
-        levelText.text = $"{level}";
+        levelText.text = $"Level {level}";
     }
     public void updateAbilityPoint(int point){
         abilityPointsText.text = $"{point}";
