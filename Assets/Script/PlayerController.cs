@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : MonoBehaviour
@@ -38,7 +39,7 @@ public class PlayerController : MonoBehaviour
     bool die = false;
     BarbarianAnimation barbarian;
     RogueAbilities rogue;
-
+    public float normalSpeed;
     private void Start()
     {   
         hpbar = GameObject.FindWithTag("hpbar")?.GetComponent<HorizontalProgressBar>();
@@ -77,9 +78,10 @@ public class PlayerController : MonoBehaviour
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
         barbarian = GetComponent<BarbarianAnimation>();
         rogue = GetComponent<RogueAbilities>();
+        normalSpeed = agent.speed;
     }
 
-        private void Update()
+    private void Update()
     {
         if (movement.ReadValue<float>() == 1)
         {
@@ -162,6 +164,7 @@ public class PlayerController : MonoBehaviour
 
     public void HandleInput()
     {
+        if(EventSystem.current.IsPointerOverGameObject()) return;
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
