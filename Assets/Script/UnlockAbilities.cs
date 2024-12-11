@@ -9,14 +9,26 @@ public class UnlockAbilities : MonoBehaviour
         playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
     }
     public void WildcardAbility(){
-        Debug.Log("Wildcard Ability Unlocked");
+        if(playerController.abilityPoints > 0){
+            playerController.abilityPoints--;
+            playerController.wildcardUnlock = true;
+            Debug.Log("Wildcard Ability Unlocked");
+        }
         
     }
     public void UltimateAbility(){
-        Debug.Log("Ultimate Ability Unlocked");
+        if(playerController.abilityPoints > 0){
+            playerController.abilityPoints--;
+            playerController.ultimateUnlock = true;
+            Debug.Log("Ultimate Ability Unlocked");
+        }
         
     }
     public void DefensiveAbility(){
-        Debug.Log("Defensive Ability Unlocked");
+        if(playerController.abilityPoints > 0){
+            playerController.abilityPoints--;
+            playerController.defensiveUnlock = true;
+            Debug.Log("Defensive Ability Unlocked");
+        }
     }
 }

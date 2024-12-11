@@ -48,6 +48,15 @@ public class BarbarianAnimation : MonoBehaviour
     {
         foreach (var ability in abilities)
         {
+            if(playerController.defensiveUnlock){
+                abilities[1].unlockAbility();
+            }
+            else if(playerController.wildcardUnlock){
+                abilities[2].unlockAbility();
+            }
+            else if(playerController.ultimateUnlock){
+                abilities[3].unlockAbility();
+            }
             if(ability.type == AbilityType.Basic){
                 playerController.basicCooldownText.text = $"{(int)ability.cooldownTimer}";
             }
@@ -322,7 +331,7 @@ public class BarbarianAnimation : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 1f);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 10, playerController.layerMask))
+        if (Physics.Raycast(ray, out hit, 100, playerController.layerMask))
         {
             float hitDistance = Vector3.Distance(ray.origin, hit.point);
             Debug.Log("Hit distance: " + hitDistance);

@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : MonoBehaviour
@@ -36,10 +37,13 @@ public class PlayerController : MonoBehaviour
     public int maxHP = 100;
     public int currentHP = 100;
     public int abilityPoints = 0;
+    public int healingPotions = 0;
+    public int runeFragments = 0;
     bool die = false;
-    BarbarianAnimation barbarian;
-    RogueAbilities rogue;
     public float normalSpeed;
+    public bool wildcardUnlock;
+    public bool defensiveUnlock;
+    public bool ultimateUnlock;
     private void Start()
     {   
         hpbar = GameObject.FindWithTag("hpbar")?.GetComponent<HorizontalProgressBar>();
@@ -76,20 +80,71 @@ public class PlayerController : MonoBehaviour
         updateXP(currentXP);
         levelText.text = $"Level {currentLevel}";
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
-        barbarian = GetComponent<BarbarianAnimation>();
-        rogue = GetComponent<RogueAbilities>();
+        healingPotionsText.text = $"Healing Potions: {healingPotions}";
+        runeFragmentsText.text = $"Rune Fragments: {runeFragments}";
         normalSpeed = agent.speed;
     }
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.F)){
+            Heal();
+        }
         if (movement.ReadValue<float>() == 1)
         {
             HandleInput();
         }
         OnSpeedChanged?.Invoke(Mathf.Clamp01(agent.velocity.magnitude / agent.speed));
+        updateHP(currentHP);
+        updateXP(currentXP);
+        levelText.text = $"Level {currentLevel}";
+        abilityPointsText.text = $"Ability Points: {abilityPoints}";
+        healingPotionsText.text = $"Healing Potions: {healingPotions}";
+        runeFragmentsText.text = $"Rune Fragments: {runeFragments}";
+        normalSpeed = agent.speed;
+
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("heal"))
+        {
+            if(healingPotions < 3){
+                healingPotions++;
+                Destroy(other.gameObject);
+            }
+        }
+        else if(other.CompareTag("rune")){
+            runeFragments++;
+            Destroy(other.gameObject);
+        }
+    }
+
+        private void Heal()
+    {
+        if (currentHP == maxHP)
+        {
+            Debug.Log("Health is already full. Cannot use a healing potion.");
+            return;
+        }
+
+        if (healingPotions <= 0)
+        {
+            Debug.Log("No healing potions available.");
+            return;
+        }
+
+        int healAmount = Mathf.CeilToInt(maxHP * 0.5f);
+        currentHP = Mathf.Min(currentHP + healAmount, maxHP);
+
+        healingPotions--;
+
+        updateHP(currentHP);
+        healingPotionsText.text = $"Healing Potions: {healingPotions}";
+        animator.SetTrigger("heal");
+
+        Debug.Log($"Healed for {healAmount} HP. Current HP: {currentHP}. Healing potions left: {healingPotions}");
+    }
     public void TakeDamage(int damage)
     {
         currentHP -= damage;
@@ -176,7 +231,7 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMove(Vector3 location)
     {
-        agent.speed = 5;
+        //agent.speed = 5;
         agent.SetDestination(location);
     }
 
