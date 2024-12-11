@@ -1001,6 +1001,7 @@ GameObject:
   - component: {fileID: 1889611922}
   - component: {fileID: 1889611921}
   - component: {fileID: 1889611920}
+  - component: {fileID: 1889611923}
   m_Layer: 6
   m_Name: Collider
   m_TagString: Camp
@@ -1052,6 +1053,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1889611923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889611919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdced8faeaf8f1243807a0d28ba618ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerInCamp: 1
 --- !u!1001 &6943965015149570759
 PrefabInstance:
   m_ObjectHideFlags: 0

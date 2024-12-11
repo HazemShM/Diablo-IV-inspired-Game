@@ -130,7 +130,24 @@ public class BarbarianAnimation : MonoBehaviour
 
         LilithAnimation lilith = selectedTarget.GetComponent<LilithAnimation>();
         Animator lilithAnimator = lilith != null ? lilith.GetComponent<Animator>() : null;
-
+        Enemy enemy = selectedTarget.GetComponent<Enemy>();
+        Animator enemyAnimator = enemy.GetComponent<Animator>();
+        if (enemy != null)
+        {
+            GameObject particleInstance = Instantiate(
+                hitParticle,
+                new Vector3(
+                    enemy.transform.position.x,
+                    transform.position.y,
+                    enemy.transform.position.z
+                ),
+                enemy.transform.rotation
+            );
+            Destroy(particleInstance, 2.0f);
+            enemyAnimator.SetTrigger("hit");
+            enemy.TakeDamage(currentAbility.damage);
+            Debug.Log(enemy.health);
+        }
         if (lilith != null)
         {
             if (lilith.activeMinions.Count > 0)
@@ -158,17 +175,15 @@ public class BarbarianAnimation : MonoBehaviour
             {
                 lilith.TakeDamage(currentAbility.damage, playerController);
                 Debug.Log($"Lilith's Health: {lilith.bossHealth}");
-            }
-            GameObject particleInstance = Instantiate(
+                GameObject particleInstance = Instantiate(
                 hitParticle,
                 new Vector3(
                     lilith.transform.position.x,
                     transform.position.y,
                     lilith.transform.position.z
-                ),
-                lilith.transform.rotation
-            );
-            Destroy(particleInstance, 2.0f);
+                ),lilith.transform.rotation);
+                Destroy(particleInstance, 2.0f);
+            }
         }
         canAttack = false;
         anim.SetTrigger("Bash");
