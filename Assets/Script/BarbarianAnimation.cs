@@ -279,7 +279,7 @@ public class BarbarianAnimation : MonoBehaviour
     anim.SetBool("isCharging", true);
     anim.SetTrigger("Charge");
 
-    float chargeSpeed = 10f;
+    float chargeSpeed = 20f;
 
     isCharging = true;
 
