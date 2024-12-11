@@ -53,7 +53,7 @@ public class Minion : MonoBehaviour
         MinionAnimator = GetComponent<Animator>();
         playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.transform;
-        currentState = MinionState.Alerted;
+        currentState = MinionState.NonAggressive;
 
         // Store the original position of the minion
         originalPosition = transform.position;
@@ -115,6 +115,7 @@ public class Minion : MonoBehaviour
 
 
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
