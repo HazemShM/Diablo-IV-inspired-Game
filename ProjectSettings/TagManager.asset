@@ -18,6 +18,9 @@ TagManager:
   - wildcardCooldownText
   - defensiveCooldownText
   - ultimateCooldownText
+  - Fireball
+  - heal
+  - rune
   layers:
   - Default
   - TransparentFX
@@ -27,7 +30,7 @@ TagManager:
   - UI
   - Walkable
   - Enemies
-  - 
+  - minimap
   - 
   - 
   - 
