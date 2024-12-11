@@ -231,7 +231,7 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMove(Vector3 location)
     {
-        //agent.speed = 5;
+        agent.speed = 9;
         agent.SetDestination(location);
     }
 
