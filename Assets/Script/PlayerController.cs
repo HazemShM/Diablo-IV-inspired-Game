@@ -42,10 +42,10 @@ public class PlayerController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         OnSpeedChanged += SetSpeed;
         animator = GetComponent<Animator>();
-        updateHP(currentHP);
-        updateXP(currentXP);
-        levelText.text = $"Level {currentLevel}";
-        abilityPointsText.text = $"Ability Points: {abilityPoints}";
+        //updateHP(currentHP);
+        //updateXP(currentXP);
+        //levelText.text = $"Level {currentLevel}";
+        //abilityPointsText.text = $"Ability Points: {abilityPoints}";
     }
 
     public void TakeDamage(int damage)
@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
         currentHP -= damage;
         Debug.Log($"Player took {damage} damage! Current health: {currentHP}");
 
-        updateHP(currentHP);
+        //updateHP(currentHP);
 
         if (currentHP <= 0)
         {
@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
         currentXP += xp;
         Debug.Log($"Gained {xp} XP. Current XP: {currentXP}/{maxXP}");
 
-        updateXP(currentXP);
+        //updateXP(currentXP);
 
         while (currentXP >= maxXP && currentLevel < 4)
         {
@@ -83,8 +83,8 @@ public class PlayerController : MonoBehaviour
         currentXP -= maxXP;
         maxXP = 100 * currentLevel;
 
-        updateHP(currentHP);
-        updateXP(currentXP);
+        //updateHP(currentHP);
+        //updateXP(currentXP);
 
         levelText.text = $"Level {currentLevel}";
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
@@ -148,19 +148,19 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat(movementSpeed, speed);
     }
 
-    public void updateHP(float hp)
-    {
-        float progress = (float)hp / maxHP;
-        hpbar?.SetProgress(progress);
-        hpText.text = $"{hp}";
-    }
+    //public void updateHP(float hp)
+    //{
+    //    float progress = (float)hp / maxHP;
+    //    hpbar?.SetProgress(progress);
+    //    hpText.text = $"{hp}";
+    //}
 
-    public void updateXP(float xp)
-    {
-        float progress = (float)xp / maxXP;
-        xpbar?.SetProgress(progress);
-        xpText.text = $"{xp}";
-    }
+    //public void updateXP(float xp)
+    //{
+    //    float progress = (float)xp / maxXP;
+    //    xpbar?.SetProgress(progress);
+    //    xpText.text = $"{xp}";
+    //}
 
     public void ReflectDamage(int reflectedDamage)
     {

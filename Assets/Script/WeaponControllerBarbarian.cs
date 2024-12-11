@@ -4,6 +4,28 @@ public class WeaponControllerBarbarian : MonoBehaviour
 {
     public BarbarianAnimation barbarian;
     public GameObject hitParticle;
+    public PlayerController playerController;
+
+    private void Start()
+    {
+        // Access the PlayerController via the BarbarianAnimation component
+        if (barbarian != null)
+        {
+            playerController = barbarian.GetComponent<PlayerController>();
+            if (playerController == null)
+            {
+                Debug.LogError("PlayerController not found on the same GameObject as BarbarianAnimation!");
+            }
+            else
+            {
+                Debug.Log("PlayerController successfully retrieved from BarbarianAnimation.");
+            }
+        }
+        else
+        {
+            Debug.LogError("BarbarianAnimation component is not assigned in WeaponControllerBarbarian!");
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -23,7 +45,6 @@ public class WeaponControllerBarbarian : MonoBehaviour
                 Destroy(particleInstance, 2.0f);
                 Enemy enemy = other.GetComponent<Enemy>();
                 LilithAnimation lilith = other.GetComponent<LilithAnimation>();
-                PlayerController playerController = GetComponent<PlayerController>();
                 if (enemy != null)
                 {
                     Animator enemyAnimator = enemy.GetComponent<Animator>();
@@ -47,14 +68,16 @@ public class WeaponControllerBarbarian : MonoBehaviour
                     {
                         lilith.shieldHealth -= barbarian.currentAbility.damage;
                         Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+
                         if (lilith.shieldHealth <= 0)
                         {
                             lilith.CheckShieldDestroyed();
                         }
                         else
                         {
-                            Debug.Log("Lilith's shield absorbed the damage!");
-                            Debug.Log($"player health: {playerController.currentHP}");
+                            Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
+                            playerController.ReflectDamage((int)barbarian.currentAbility.damage + 15);
+
                         }
                     }
                     else

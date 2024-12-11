@@ -149,7 +149,9 @@ public class BarbarianAnimation : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Lilith's shield absorbed the damage!");
+                    Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
+                    playerController.ReflectDamage((int)currentAbility.damage + 15);
+
                 }
             }
             else
@@ -208,14 +210,17 @@ public class BarbarianAnimation : MonoBehaviour
                     if (lilith.isShieldActive)
                     {
                         lilith.shieldHealth -= currentAbility.damage;
+                        Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+
                         if (lilith.shieldHealth <= 0)
                         {
                             lilith.CheckShieldDestroyed();
                         }
-                    }
-                    else
-                    {
-                        lilith.TakeDamage(currentAbility.damage, playerController);
+                        else
+                        {
+                            Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
+                            playerController.ReflectDamage((int)currentAbility.damage);
+                        }
                     }
                 }
             }
@@ -314,11 +319,9 @@ public class BarbarianAnimation : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 10, playerController.layerMask))
         {
             float hitDistance = Vector3.Distance(ray.origin, hit.point);
-            Debug.Log("Hit distance: " + hitDistance);
             if (hit.transform.CompareTag("Enemy"))
             {
                 selectedTarget = hit.transform;
-                Debug.Log("Hit enemy at distance: " + hitDistance);
             }
         }
         isUsingAbility = false;
