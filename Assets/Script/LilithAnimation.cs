@@ -48,15 +48,15 @@ public class LilithAnimation : MonoBehaviour
 
         if (Phase == 1)
         {
-            // UpdateActiveMinions();
-            // if (CanUseSummonMinions && activeMinions.Count == 0)
-            // {
-            //     SummonMinions();
-            // }
-            // else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
-            // {
-            //     StartCoroutine(DiveBomb());
-            // }
+            UpdateActiveMinions();
+            if (CanUseSummonMinions && activeMinions.Count == 0)
+            {
+                SummonMinions();
+            }
+            else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
+            {
+                StartCoroutine(DiveBomb());
+            }
         }
         else if (Phase == 2)
         {
