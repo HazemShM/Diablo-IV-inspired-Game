@@ -5,9 +5,12 @@ public class WeaponControllerBarbarian : MonoBehaviour
     public BarbarianAnimation barbarian;
     public GameObject hitParticle;
     public PlayerController playerController;
+    public BoxCollider weaponCollider;
 
     private void Start()
     {
+        weaponCollider = GetComponent<BoxCollider>();
+        weaponCollider.enabled = true;
         // Access the PlayerController via the BarbarianAnimation component
         if (barbarian != null)
         {
@@ -24,6 +27,18 @@ public class WeaponControllerBarbarian : MonoBehaviour
         else
         {
             Debug.LogError("BarbarianAnimation component is not assigned in WeaponControllerBarbarian!");
+        }
+    }
+
+    void Update()
+    {
+        if (barbarian.weaponColliderEnabled)
+        {
+            weaponCollider.enabled = true;
+        }
+        else if (!barbarian.weaponColliderEnabled)
+        {
+            weaponCollider.enabled = false;
         }
     }
 
@@ -48,14 +63,12 @@ public class WeaponControllerBarbarian : MonoBehaviour
                 if (enemy != null)
                 {
                     Animator enemyAnimator = enemy.GetComponent<Animator>();
-                    enemyAnimator?.SetTrigger("hit");
+                    enemyAnimator.SetTrigger("hit");
                     enemy.TakeDamage(barbarian.currentAbility.damage); // Apply IronMaelstorm damage
                 }
                 else if (lilith != null)
                 {
-                    Animator lilithAnimator = lilith.GetComponent<Animator>();
-                    lilithAnimator.SetTrigger("hit");
-                    if(lilith.activeMinions.Count > 0)
+                    if (lilith.activeMinions.Count > 0)
                     {
                         Debug.Log("kill minions first");
                     }

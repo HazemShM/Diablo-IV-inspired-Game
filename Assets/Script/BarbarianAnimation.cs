@@ -28,10 +28,11 @@ public class BarbarianAnimation : MonoBehaviour
     public AudioClip ironMaelstormAttackSound;
     public AudioClip chargeAttackSound;
     public GameObject hitParticle;
-
+    public bool weaponColliderEnabled;
     public void Start()
     {
         cam = Camera.main;
+        weaponColliderEnabled = true;
         playerController = GetComponent<PlayerController>();
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
@@ -41,32 +42,39 @@ public class BarbarianAnimation : MonoBehaviour
         abilities.Add(basicAbillity);
         abilities.Add(new Ability(AbilityType.Defensive, "Shield", KeyCode.W, 0, 10));
         abilities.Add(new Ability(AbilityType.WildCard, "Iron Maelstorm", KeyCode.Q, 10, 5));
-        abilities.Add(new Ability(AbilityType.Ultimate, "Charge", KeyCode.E, 100, 10));
+        abilities.Add(new Ability(AbilityType.Ultimate, "Charge", KeyCode.E, 5, 10));
     }
 
     public void Update()
     {
         foreach (var ability in abilities)
         {
-            if(playerController.defensiveUnlock){
+            if (playerController.defensiveUnlock)
+            {
                 abilities[1].unlockAbility();
             }
-            else if(playerController.wildcardUnlock){
+            else if (playerController.wildcardUnlock)
+            {
                 abilities[2].unlockAbility();
             }
-            else if(playerController.ultimateUnlock){
+            else if (playerController.ultimateUnlock)
+            {
                 abilities[3].unlockAbility();
             }
-            if(ability.type == AbilityType.Basic){
+            if (ability.type == AbilityType.Basic)
+            {
                 playerController.basicCooldownText.text = $"{(int)ability.cooldownTimer}";
             }
-            else if(ability.type == AbilityType.WildCard){
+            else if (ability.type == AbilityType.WildCard)
+            {
                 playerController.wildcardCooldownText.text = $"{(int)ability.cooldownTimer}";
             }
-            else if(ability.type == AbilityType.Defensive){
+            else if (ability.type == AbilityType.Defensive)
+            {
                 playerController.defensiveCooldownText.text = $"{(int)ability.cooldownTimer}";
             }
-            else if(ability.type == AbilityType.Ultimate){
+            else if (ability.type == AbilityType.Ultimate)
+            {
                 playerController.ultimateCooldownText.text = $"{(int)ability.cooldownTimer}";
             }
 
@@ -205,7 +213,7 @@ public class BarbarianAnimation : MonoBehaviour
                     lilith.transform.position.x,
                     transform.position.y,
                     lilith.transform.position.z
-                ),lilith.transform.rotation);
+                ), lilith.transform.rotation);
                 Destroy(particleInstance, 2.0f);
             }
         }
@@ -235,46 +243,9 @@ public class BarbarianAnimation : MonoBehaviour
             {
                 enemiesInRange.Add(enemy);
             }
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null && enemiesInRange.Contains(enemy))
+            if (!canAttack && currentAbility.type == AbilityType.Ultimate)
             {
-                enemiesInRange.Remove(enemy);
-            }
-        }
-    }
-
-    public void ApplyChargeDamage()
-    {
-        if (currentAbility.type == AbilityType.Ultimate && isCharging)
-        {
-            foreach (Enemy enemy in enemiesInRange)
-            {
-                if (enemy == null) continue; // Skip if enemy has been destroyed
-
-                Animator enemyAnimator = enemy.GetComponent<Animator>();
-                if (enemyAnimator != null)
-                {
-                    enemyAnimator.SetTrigger("hit");
-                }
-
-                GameObject particleInstance = Instantiate(
-                    hitParticle,
-                    new Vector3(
-                        enemy.transform.position.x,
-                        transform.position.y,
-                        enemy.transform.position.z
-                    ),
-                    enemy.transform.rotation
-                );
-                Destroy(particleInstance, 2.0f);
-                enemy.TakeDamage(currentAbility.damage);
+                weaponColliderEnabled = false;
                 LilithAnimation lilith = other.GetComponent<LilithAnimation>();
 
                 if (lilith != null)
@@ -296,6 +267,7 @@ public class BarbarianAnimation : MonoBehaviour
                     }
                     else
                     {
+                        Debug.Log("here");
                         lilith.TakeDamage(currentAbility.damage, playerController);
                     }
                 }
@@ -306,74 +278,122 @@ public class BarbarianAnimation : MonoBehaviour
             playerController.TakeDamage(30);
             Debug.Log($"Player hit spikes, -30 hp, Player Health: {playerController.currentHP}");
         }
+
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            weaponColliderEnabled = true;
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null && enemiesInRange.Contains(enemy))
+            {
+                enemiesInRange.Remove(enemy);
+            }
+        }
+    }
+    private HashSet<Enemy> damagedEnemies = new HashSet<Enemy>();
+
+    public void ApplyChargeDamage()
+    {
+        if (currentAbility.type == AbilityType.Ultimate && isCharging)
+        {
+            foreach (Enemy enemy in enemiesInRange)
+            {
+                if (enemy == null || damagedEnemies.Contains(enemy)) continue; // Skip if already damaged or null
+
+                damagedEnemies.Add(enemy); // Mark enemy as damaged
+
+                Animator enemyAnimator = enemy.GetComponent<Animator>();
+                if (enemyAnimator != null)
+                {
+                    enemyAnimator.SetTrigger("hit");
+                }
+
+                GameObject particleInstance = Instantiate(
+                    hitParticle,
+                    new Vector3(
+                        enemy.transform.position.x,
+                        transform.position.y,
+                        enemy.transform.position.z
+                    ),
+                    enemy.transform.rotation
+                );
+                Destroy(particleInstance, 2.0f);
+
+                enemy.TakeDamage(currentAbility.damage);
+            }
+        }
+    }
+
 
 
     private IEnumerator ChargeSequence()
-{
-    Vector3? targetPosition = null;
-
-    // Wait for user to select a target position
-    while (targetPosition == null)
     {
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        Vector3? targetPosition = null;
+
+        // Wait for user to select a target position
+        while (targetPosition == null)
         {
-            Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
+            if (Mouse.current.rightButton.wasPressedThisFrame)
             {
-                targetPosition = hit1.point;
-                Debug.Log("Target position set: " + targetPosition);
+                Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
+                if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
+                {
+                    targetPosition = hit1.point;
+                    Debug.Log("Target position set: " + targetPosition);
+                }
             }
+            yield return null;
         }
-        yield return null;
-    }
 
 
-    Vector3 target = targetPosition.Value;
-    NavMeshHit hit;
-    if (!NavMesh.SamplePosition(target, out hit, 2.0f, NavMesh.AllAreas))
-    {
-        Debug.LogWarning("Target position is not on a valid NavMesh!");
+        Vector3 target = targetPosition.Value;
+        NavMeshHit hit;
+        if (!NavMesh.SamplePosition(target, out hit, 2.0f, NavMesh.AllAreas))
+        {
+            Debug.LogWarning("Target position is not on a valid NavMesh!");
+            anim.SetBool("isCharging", false);
+            canAttack = true;
+            yield break; // Stop the coroutine if the target is not valid
+        }
+
+
+        target = hit.position;
+        Vector3 directionToTarget = (target - transform.position).normalized;
+        directionToTarget.y = 0;
+        transform.rotation = Quaternion.LookRotation(directionToTarget);
+
+        agent.isStopped = true;
+
+        anim.SetBool("isCharging", true);
+        anim.SetTrigger("Charge");
+
+        float chargeSpeed = 20f;
+
+        isCharging = true;
+
+        while (Vector3.Distance(transform.position, target) > 0.1f)
+        {
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                target,
+                chargeSpeed * Time.deltaTime
+            );
+
+            // Apply damage continuously during charge
+            ApplyChargeDamage();
+            yield return null;
+        }
+
+        agent.isStopped = false;
+        agent.ResetPath();
+
+        isCharging = false;
         anim.SetBool("isCharging", false);
         canAttack = true;
-        yield break; // Stop the coroutine if the target is not valid
     }
-
-
-    target = hit.position;
-    Vector3 directionToTarget = (target - transform.position).normalized;
-    directionToTarget.y = 0;
-    transform.rotation = Quaternion.LookRotation(directionToTarget);
-
-    agent.isStopped = true;
-
-    anim.SetBool("isCharging", true);
-    anim.SetTrigger("Charge");
-
-    float chargeSpeed = 20f;
-
-    isCharging = true;
-
-    while (Vector3.Distance(transform.position, target) > 0.1f)
-    {
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            target,
-            chargeSpeed * Time.deltaTime
-        );
-
-        // Apply damage continuously during charge
-        ApplyChargeDamage();
-        yield return null;
-    }
-
-    agent.isStopped = false;
-    agent.ResetPath();
-
-    isCharging = false;
-    anim.SetBool("isCharging", false);
-    canAttack = true;
-}
 
     private IEnumerator AttackCooldownBash()
     {
@@ -402,7 +422,7 @@ public class BarbarianAnimation : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 1f);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 100, playerController.layerMask))
+        if (Physics.Raycast(ray, out hit, 25, playerController.layerMask))
         {
             float hitDistance = Vector3.Distance(ray.origin, hit.point);
             if (hit.transform.CompareTag("Enemy"))

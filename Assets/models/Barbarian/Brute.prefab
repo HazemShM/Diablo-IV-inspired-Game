@@ -210,6 +210,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barbarian: {fileID: 5938973600601099842}
   hitParticle: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
+  playerController: {fileID: 0}
+  weaponCollider: {fileID: 0}
 --- !u!65 &6581022292929662116
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -375,6 +377,7 @@ MonoBehaviour:
   ironMaelstormAttackSound: {fileID: 0}
   chargeAttackSound: {fileID: 0}
   hitParticle: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
+  weaponColliderEnabled: 0
 --- !u!65 &5160694495814335102
 BoxCollider:
   m_ObjectHideFlags: 0
