@@ -6,23 +6,18 @@ public class campMinions : MonoBehaviour
 {
     public Minion[] enemies; // Array of minions
     private int maxAlertedMinions = 5; // Maximum number of alerted minions
-    private List<Minion> nonAggressiveMinions = new List<Minion>(); // List of non-aggressive minions
-    public int sizeOfMinions;
+    private List<Minion> nonAggressiveMinions = new List<Minion>();
+    int alertedCount = 0; // List of non-aggressive minions
 
     void Start()
     {
-        
-        enemies = new Minion[sizeOfMinions];
-        int alertedCount = 0;
-
-        for (int i = 0; i < sizeOfMinions; i++)
+        for (int i = 0; i < enemies.Length; i++)
         {
             // Assume minions are already instantiated in the scene and assigned to the array
             Minion minion = enemies[i];
-
             if (minion == null) continue;
 
-            if (alertedCount < maxAlertedMinions && Random.value > 0.5f)
+            if (alertedCount < maxAlertedMinions && Random.value > 0.3f)
             {
                 // Set minion to alerted state
                 minion.AlertMinion();
@@ -30,24 +25,28 @@ public class campMinions : MonoBehaviour
             }
             else
             {
-                // Set minion to non-aggressive state and add to the list
                 minion.currentState = Minion.MinionState.NonAggressive;
                 nonAggressiveMinions.Add(minion);
             }
+
+            Debug.Log(minion.currentState);
         }
+
+        Debug.Log($"Total alerted minions: {alertedCount}");
     }
 
     void Update()
     {
         // Monitor for any dead alerted minions and replace them with non-aggressive ones
         ReplaceDeadAlertedMinions();
+        Debug.Log($"Total alerted minions: {alertedCount}");
     }
 
     private void ReplaceDeadAlertedMinions()
     {
         foreach (Minion minion in enemies)
         {
-            if (minion == null) continue; // Skip if the minion is null
+            if (minion == null) continue;
 
             if (minion.currentState == Minion.MinionState.Alerted && minion.GetComponent<Enemy>().health <= 0)
             {
@@ -56,10 +55,13 @@ public class campMinions : MonoBehaviour
                 {
                     replacement.AlertMinion();
                     nonAggressiveMinions.Remove(replacement);
+                    minion.currentState = Minion.MinionState.NonAggressive;
+                    alertedCount++;
                 }
             }
         }
     }
+
 
     private Minion GetNonAggressiveMinion()
     {

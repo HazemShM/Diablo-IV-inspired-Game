@@ -5,25 +5,29 @@ using UnityEngine.Events;
 using System;
 
 public class Enemy : MonoBehaviour
-{   
+{
     public float health, maxHealth = 20f;
-    Animator animator ;
+    Animator animator;
     private NavMeshAgent agent;
     GameObject playerObject;
     public int xp = 10;
     bool died = false;
+    Navigation navigation;
     [SerializeField] FloatingHealthBar healthBar;
-    void Start(){
+    void Start()
+    {
         health = maxHealth;
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         playerObject = GameObject.FindGameObjectWithTag("Player");
     }
 
-    void Awake(){
+    void Awake()
+    {
         healthBar = GetComponentInChildren<FloatingHealthBar>();
     }
-    void Update(){
+    void Update()
+    {
         if (health <= 0 && !died)
         {
             Die();
@@ -41,16 +45,24 @@ public class Enemy : MonoBehaviour
         died = true;
         agent.isStopped = true;
         animator.SetTrigger("die");
+        navigation = gameObject.GetComponent<Navigation>();
+        if (navigation != null)
+        {
+            navigation.isDead = true;
+        }
         Destroy(gameObject, 3f);
         playerObject.GetComponent<PlayerController>().GainXP(xp);
     }
-    public void setHealth(float health){
+    public void setHealth(float health)
+    {
         this.health = health;
     }
-    public void setXp(int xp){
+    public void setXp(int xp)
+    {
         this.xp = xp;
     }
-    public int getXp(){
+    public int getXp()
+    {
         return xp;
     }
 }
