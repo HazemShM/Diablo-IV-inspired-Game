@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
@@ -129,9 +130,8 @@ public class BarbarianAnimation : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(directionToTarget);
 
         LilithAnimation lilith = selectedTarget.GetComponent<LilithAnimation>();
-        Animator lilithAnimator = lilith != null ? lilith.GetComponent<Animator>() : null;
+        // Animator lilithAnimator = lilith.GetComponent<Animator>();
         Enemy enemy = selectedTarget.GetComponent<Enemy>();
-        Animator enemyAnimator = enemy.GetComponent<Animator>();
         if (enemy != null)
         {
             GameObject particleInstance = Instantiate(
@@ -144,6 +144,7 @@ public class BarbarianAnimation : MonoBehaviour
                 enemy.transform.rotation
             );
             Destroy(particleInstance, 2.0f);
+            Animator enemyAnimator = enemy.GetComponent<Animator>();
             enemyAnimator.SetTrigger("hit");
             enemy.TakeDamage(currentAbility.damage);
             Debug.Log(enemy.health);
@@ -155,7 +156,7 @@ public class BarbarianAnimation : MonoBehaviour
                 Debug.Log("There are active minions. Kill them first before damaging Lilith!");
                 return;
             }
-            if (lilith.isShieldActive)
+            else if (lilith.isShieldActive)
             {
                 lilith.shieldHealth -= currentAbility.damage;
                 Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
@@ -237,6 +238,10 @@ public class BarbarianAnimation : MonoBehaviour
                             playerController.ReflectDamage((int)currentAbility.damage);
                         }
                     }
+                    else
+                    {
+                        lilith.TakeDamage(currentAbility.damage, playerController);
+                    }
                 }
             }
         }
@@ -245,6 +250,11 @@ public class BarbarianAnimation : MonoBehaviour
             playerController.TakeDamage(30);
             Debug.Log($"Player hit spikes, -30 hp, Player Health: {playerController.currentHP}");
         }
+    }
+
+    private IEnumerator UltDischarge()
+    {
+        yield return new WaitForSeconds(3);
     }
 
     private IEnumerator ChargeSequence()

@@ -19,6 +19,8 @@ public class LilithAnimation : MonoBehaviour
     public bool CanUseSummonMinions = true;
     public bool CanUseDiveBomb = false; // Just like phase 2. Why? Because I can.
     public bool HitbyDiveBomb = false;
+    public bool EffectedByPlayerUlt = false;
+    public bool TransitioningToPhase2 = false;
     private GameObject shieldInstance;
     private GameObject playerObject;
     private Transform player;
@@ -37,7 +39,7 @@ public class LilithAnimation : MonoBehaviour
         animator = GetComponent<Animator>();
         ac = GetComponent<AudioSource>();
         Phase = 1; // Change this to test phases
-        Debug.Log("Forced Phase to: " + Phase);
+        Debug.Log("Phase: " + Phase);
     }
 
     void Update()
@@ -46,25 +48,28 @@ public class LilithAnimation : MonoBehaviour
 
         if (Phase == 1)
         {
-            UpdateActiveMinions();
-            if (CanUseSummonMinions && activeMinions.Count == 0)
-            {
-                SummonMinions();
-            }
-            else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
-            {
-                StartCoroutine(DiveBomb());
-            }
+            // UpdateActiveMinions();
+            // if (CanUseSummonMinions && activeMinions.Count == 0)
+            // {
+            //     SummonMinions();
+            // }
+            // else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
+            // {
+            //     StartCoroutine(DiveBomb());
+            // }
         }
         else if (Phase == 2)
         {
-            if (CanUseBloodySpikes && !isShieldActive) // Use Bloody Spikes if available
+            if (!TransitioningToPhase2)
             {
-                BloodSpikes();
-            }
-            else if (CanUseReflectiveAura) // Use Reflective Aura if available
-            {
-                StartCoroutine(ReflectiveAura());
+                if (CanUseBloodySpikes && !isShieldActive) // Use Bloody Spikes if available
+                {
+                    BloodSpikes();
+                }
+                else if (CanUseReflectiveAura) // Use Reflective Aura if available
+                {
+                    StartCoroutine(ReflectiveAura());
+                }
             }
         }
     }
@@ -154,7 +159,7 @@ public class LilithAnimation : MonoBehaviour
 
     public IEnumerator DiveBombCountdown()
     {
-        yield return new WaitForSeconds(15); // DiveBomb cooldown duration
+        yield return new WaitForSeconds(10); // DiveBomb cooldown duration
         HitbyDiveBomb = false;
         CanUseDiveBomb = true;
     }
@@ -165,7 +170,7 @@ public class LilithAnimation : MonoBehaviour
         animator.SetTrigger("ReflectiveAura");
         isShieldActive = true;
         shieldHealth = 50f;
-        Vector3 spawnPosition = transform.position;
+        Vector3 spawnPosition = transform.position + new Vector3(0, 0.2f, 0);
         Quaternion spawnRotation = Quaternion.identity;
         yield return new WaitForSeconds(0.2f);
         ac.PlayOneShot(ShieldSound);
@@ -239,6 +244,10 @@ public class LilithAnimation : MonoBehaviour
 
     public void TakeDamage(float damageAmount, PlayerController playerController)
     {
+        if (TransitioningToPhase2)
+        {
+            return;
+        }
         if (isShieldActive)
         {
             shieldHealth -= damageAmount;
@@ -262,7 +271,10 @@ public class LilithAnimation : MonoBehaviour
         }
         bossHealth -= damageAmount;
         Debug.Log($"Lilith's Health: {bossHealth}");
-        animator.SetTrigger("Hit");
+        if (bossHealth > 0)
+        {
+            animator.SetTrigger("Hit");
+        }
         if (bossHealth <= 0)
         {
             if (Phase == 2)
@@ -271,22 +283,26 @@ public class LilithAnimation : MonoBehaviour
             }
             else if (Phase == 1)
             {
-                TransitionToPhase2();
+                StartCoroutine(TransitionToPhase2());
             }
         }
     }
 
     private IEnumerator Die()
     {
-        animator.SetTrigger("Die");
+        animator.SetBool("Dead", true);
         yield return new WaitForSeconds(5);
         Destroy(gameObject);
     }
 
-    private void TransitionToPhase2()
+    private IEnumerator TransitionToPhase2()
     {
         Phase = 2;
         bossHealth = 100;
         Debug.Log("Transitioning to Phase 2...");
+        animator.SetTrigger("Phase1Ended");
+        TransitioningToPhase2 = true;
+        yield return new WaitForSeconds(5);
+        TransitioningToPhase2 = false;
     }
 }
