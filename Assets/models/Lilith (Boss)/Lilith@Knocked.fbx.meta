@@ -1,29 +1,9 @@
 fileFormatVersion: 2
-guid: abc0b93984a59984e94dd69c234d6323
+guid: 60ef2ed977b18bf4ab2d9a56d32ecfe6
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Nightshade_diffuse
-    second: {fileID: 2800000, guid: 0161d3c55265f6c40b69a5aecaccf1d2, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Nightshade_glow
-    second: {fileID: 2800000, guid: 73a48abc7630438428ae95eb1a0a107a, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Nightshade_normal
-    second: {fileID: 2800000, guid: 27588913a5b1ad8469bed2d31adf1549, type: 3}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: Nightshade_specular
-    second: {fileID: 2800000, guid: 97fa55801b3ba6045a48d92497e05fae, type: 3}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -97,15 +77,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips:
-  - ab6f22e03b07b7d4ca05c7eb50737c1b
-  - f6f9594da4657164f9da355c1b72dd45
-  - 1edc15f37761cbf4eb0c44e5c9ed3c41
-  - 05b46d5d3904c5f4db95e405444e2d04
-  - 60ef2ed977b18bf4ab2d9a56d32ecfe6
-  - bc6220d4e335fb64baaf9befca4b5d85
-  - f1266fe6d962a3040863a1f2db004972
-  - c26e0582a45c8ef42a73e405cd1ae826
+  referencedClips: []
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
@@ -889,11 +861,11 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

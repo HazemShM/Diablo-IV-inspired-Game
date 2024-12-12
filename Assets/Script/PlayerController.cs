@@ -184,7 +184,6 @@ public class PlayerController : MonoBehaviour
         updateXP(currentXP);
         // updateAbilityPoint(abilityPoints);
         // updateLevel(currentLevel);
-
         levelText.text = $"Level {currentLevel}";
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
 
@@ -252,6 +251,12 @@ public class PlayerController : MonoBehaviour
         float progress = (float)xp / maxXP;
         xpbar?.SetProgress(progress);
         xpText.text = $"{xp}";
+    }
+
+    public void ReflectDamage(int reflectedDamage)
+    {
+        Debug.Log($"Player took {reflectedDamage} reflected damage from Lilith's shield!");
+        TakeDamage(reflectedDamage);
     }
     public void updateLevel(int level){
         levelText.text = $"Level {level}";
