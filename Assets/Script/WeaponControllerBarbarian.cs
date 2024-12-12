@@ -50,11 +50,6 @@ public class WeaponControllerBarbarian : MonoBehaviour
                     Animator enemyAnimator = enemy.GetComponent<Animator>();
                     enemyAnimator?.SetTrigger("hit");
                     enemy.TakeDamage(barbarian.currentAbility.damage); // Apply IronMaelstorm damage
-                    
-                    if (enemy.health <= 0)
-                    {
-                        playerController.GainXP(10);
-                    }
                 }
                 else if (lilith != null)
                 {

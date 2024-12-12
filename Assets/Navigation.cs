@@ -5,23 +5,46 @@ using UnityEngine.AI;
 
 public class Navigation : MonoBehaviour
 {
-    public Transform player;
+    private Transform player;
     private NavMeshAgent agent;
-    public GameObject Collider;
-    private Colliding collidingScript;
     private Animator animator;
     public float closeDistance = 30f;
-
+    private PlayerController playerController;
+    private Colliding_Minion campCollider;
+    private GameObject campArea;
+    
+    private bool isPlayerInRange = false;
+    public int attackDamage = 10;
     //new
     private Vector3[] points;
     private int currentpointIndex = 0;
     Vector3 target;
     private bool wasRunningOnThePlayer = false;
+    GameObject playerObject;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        collidingScript = Collider.GetComponent<Colliding>();
+        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
+        Debug.Log(colliders);
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Camp"))
+            {
+                campArea = collider.gameObject;
+                break;
+            }
+        }
+
+        playerObject = GameObject.FindGameObjectWithTag("Player");
+        player = playerObject.transform;
+        agent = GetComponent<NavMeshAgent>();
+        campCollider = campArea.GetComponent<Colliding_Minion>();
+
+        if (campCollider == null)
+        {
+            Debug.LogWarning($"{gameObject.name} could not find its camp!");
+        }
         animator = GetComponent<Animator>();
         //new
         points = GeneratePoints(transform.position, 10f);
@@ -48,7 +71,7 @@ public class Navigation : MonoBehaviour
 
     void Update()
     {
-        if (collidingScript.playerInCamp)
+        if (campCollider.playerInCamp)
         {
             float distance = Vector3.Distance(transform.position, player.position);
             if (distance < closeDistance)
@@ -95,6 +118,33 @@ public class Navigation : MonoBehaviour
                 target = points[currentpointIndex];
                 agent.SetDestination(target);
             }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInRange = true;
+            playerController = other.GetComponent<PlayerController>();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            isPlayerInRange = false;
+            playerController = null;
+        }
+    }
+
+    public void DealDamageToPlayer()
+    {
+        if (isPlayerInRange && player != null)
+        {
+            playerController.TakeDamage(attackDamage);
+            Debug.Log("Minion dealt damage to the player!");
         }
     }
 }
