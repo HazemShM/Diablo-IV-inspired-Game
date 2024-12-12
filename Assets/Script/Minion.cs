@@ -32,7 +32,6 @@ public class Minion : MonoBehaviour
     void Start()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
-        Debug.Log(colliders);
         foreach (var collider in colliders)
         {
             if (collider.CompareTag("Camp"))
@@ -53,12 +52,8 @@ public class Minion : MonoBehaviour
         MinionAnimator = GetComponent<Animator>();
         playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.transform;
-        currentState = MinionState.NonAggressive;
-
         // Store the original position of the minion
         originalPosition = transform.position;
-
-        Debug.Log("Minion state is: " + currentState);
     }
 
     void Update()
@@ -81,7 +76,8 @@ public class Minion : MonoBehaviour
                 }
                 else
                 {
-                    if(GetComponent<Enemy>().health > 0){
+                    if (GetComponent<Enemy>().health > 0)
+                    {
                         agent.isStopped = false;
                     }
                     agent.SetDestination(player.position);
@@ -103,7 +99,8 @@ public class Minion : MonoBehaviour
             }
             else
             {
-                if(GetComponent<Enemy>().health > 0){
+                if (GetComponent<Enemy>().health > 0)
+                {
                     agent.isStopped = false;
                 }
                 agent.SetDestination(originalPosition); // Move back to the original position

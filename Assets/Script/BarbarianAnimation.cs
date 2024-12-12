@@ -42,7 +42,7 @@ public class BarbarianAnimation : MonoBehaviour
         abilities.Add(basicAbillity);
         abilities.Add(new Ability(AbilityType.Defensive, "Shield", KeyCode.W, 0, 10));
         abilities.Add(new Ability(AbilityType.WildCard, "Iron Maelstorm", KeyCode.Q, 10, 5));
-        abilities.Add(new Ability(AbilityType.Ultimate, "Charge", KeyCode.E, 5, 10));
+        abilities.Add(new Ability(AbilityType.Ultimate, "Charge", KeyCode.E, 100, 10));
     }
 
     public void Update()
@@ -268,7 +268,7 @@ public class BarbarianAnimation : MonoBehaviour
                     else
                     {
                         Debug.Log("here");
-                        lilith.TakeDamage(currentAbility.damage, playerController);
+                        lilith.TakeDamage(20, playerController);
                     }
                 }
             }
