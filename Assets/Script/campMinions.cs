@@ -39,7 +39,6 @@ public class campMinions : MonoBehaviour
     {
         // Monitor for any dead alerted minions and replace them with non-aggressive ones
         ReplaceDeadAlertedMinions();
-        Debug.Log($"Total alerted minions: {alertedCount}");
     }
 
     private void ReplaceDeadAlertedMinions()
