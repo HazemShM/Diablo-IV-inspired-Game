@@ -6,6 +6,7 @@ using System.Collections;
 
 public class SorcererAbilityManager : MonoBehaviour
 {
+    private PlayerController playerController;
     public GameObject clonePrefab;
     public GameObject fireballPrefab;
     public GameObject infernoPrefab;
@@ -20,170 +21,205 @@ public class SorcererAbilityManager : MonoBehaviour
     private float nextFireballTime = 0f;
     private float nextTeleportTime = 0f;
     private float nextInfernoTime = 0f;
+    private string activeAbility = null;
 
     Animator animator;
 
     private void Start(){
         animator = GetComponent<Animator>();
+        playerController = GetComponent<PlayerController>();
     }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q) && Time.time >= nextCloneTime)
         {
             nextCloneTime = Time.time + cloneCooldown;
+            activeAbility = "Clone";
             StartCoroutine(CastClone());
         }
         else if (Input.GetKeyDown(KeyCode.W) && Time.time >= nextTeleportTime)
         {
             nextTeleportTime = Time.time + teleportCooldown;
+            activeAbility = "Teleport";
             StartCoroutine(CastTeleport());
-        }
-        else if (Input.GetKeyDown(KeyCode.R) && Time.time >= nextFireballTime)
-        {
-            nextFireballTime = Time.time + fireballCooldown;
-            StartCoroutine(CastFireball());
         }
         else if (Input.GetKeyDown(KeyCode.E) && Time.time >= nextInfernoTime)
         {
             nextInfernoTime = Time.time + infernoCooldown;
+            activeAbility = "Inferno";
             StartCoroutine(CastInferno());
+        }
+        else if (Input.GetMouseButtonDown(1) && activeAbility == null && Time.time >= nextFireballTime)
+        {
+            nextFireballTime = Time.time + fireballCooldown;
+            StartCoroutine(CastFireball());
         }
     }
 
     private IEnumerator WaitForMouseClick(System.Action<Vector3> callback)
     {
-        while (!Input.GetMouseButtonDown(1)) // Wait for right mouse click
+        while (!Input.GetMouseButtonDown(1))
         {
-            yield return null; // Wait for the next frame
+            yield return null;
         }
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, 100, playerController.layerMask))
         {
-            callback(hit.point); // Call the callback with the clicked position
+            callback(hit.point);
         }
         else
         {
-            callback(Vector3.zero); // Return zero if no valid position
+            callback(Vector3.zero);
         }
     }
 
     private IEnumerator CastTeleport()
     {
         //animator.SetTrigger("CastTeleport");
-
-        // Wait for the player to right-click and get the target position
+        activeAbility = "Teleport";
         Vector3 targetPos = Vector3.zero;
         bool clickCompleted = false;
         Time.timeScale = 0.1f;
 
-        // Start waiting for the mouse click
         yield return StartCoroutine(WaitForMouseClick(pos =>
         {
             targetPos = pos;
             clickCompleted = true;
         }));
 
-        // If no valid position, cancel ability
         if (!clickCompleted || targetPos == Vector3.zero)
         {
             yield break;
         }
 
-        // Teleport the player to the clicked position
         transform.position = targetPos;
         GetComponent<NavMeshAgent>().SetDestination(targetPos);
         Time.timeScale = 1f;
-        yield return new WaitForSeconds(0.5f); // Allow the animation to finish
+        activeAbility = null;
+        yield return new WaitForSeconds(0.5f);
     }
 
     private IEnumerator CastClone()
     {
         //animator.SetTrigger("CastClone");
-
-        // Wait for the player to right-click and get the position
+        activeAbility = "Clone";
         Vector3 targetPos = Vector3.zero;
         bool clickCompleted = false;
         Time.timeScale = 0.1f;
 
-        // Start waiting for the mouse click
         yield return StartCoroutine(WaitForMouseClick(pos =>
         {
             targetPos = pos;
             clickCompleted = true;
         }));
 
-        // If no valid position, cancel ability
-        if (!clickCompleted || targetPos == Vector3.zero)
+        if (clickCompleted && targetPos != Vector3.zero)
         {
-            yield break;
+            GameObject clone = Instantiate(clonePrefab, targetPos, Quaternion.identity);
+            clone.tag = "Clone";
+            Time.timeScale = 1f;
+            clone.GetComponent<PlayerController>().enabled = false;
+            clone.GetComponent<SorcererAbilityManager>().enabled = false;
+            NotifyEnemiesAboutClone(clone);
+
+            yield return new WaitForSeconds(cloneDuration);
+
+            Destroy(clone);
+            NotifyEnemiesTargetPlayer();
         }
 
-        GameObject clone = Instantiate(clonePrefab, targetPos, Quaternion.identity);
-        clone.GetComponent<PlayerController>().enabled = false;
-        clone.GetComponent<SorcererAbilityManager>().enabled = false;
-
-        Destroy(clone, cloneDuration);
         Time.timeScale = 1f;
-        yield return new WaitForSeconds(0.5f); // Allow animation to finish
+        activeAbility = null;
+        yield return new WaitForSeconds(0.5f);
     }
+
+   private void NotifyEnemiesAboutClone(GameObject clone)
+    {
+        Minion[] minions = FindObjectsOfType<Minion>();
+        foreach (Minion minion in minions)
+        {
+            minion.SetTarget(clone.transform);
+        }
+    }
+
+    private void NotifyEnemiesTargetPlayer()
+    {
+        Minion[] minions = FindObjectsOfType<Minion>();
+        foreach (Minion minion in minions)
+        {
+            minion.SetTarget(this.transform);
+        }
+    }
+
 
     private IEnumerator CastFireball()
     {
-        // Wait for the player to right-click and get the position
+        activeAbility = "Fireball";
         Vector3 targetPos = Vector3.zero;
         bool clickCompleted = false;
         Time.timeScale = 0.1f;
 
-        // Start waiting for the mouse click
         yield return StartCoroutine(WaitForMouseClick(pos =>
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hitInfo))
+            RaycastHit[] hits = Physics.RaycastAll(ray);
+
+            foreach (RaycastHit hit in hits)
             {
-                // Check if the clicked object has the "Enemy" tag
-                if (hitInfo.collider.CompareTag("Enemy"))
+                if (hit.collider.CompareTag("Enemy"))
                 {
-                    targetPos = hitInfo.point;
+                    targetPos = hit.point;
                     clickCompleted = true;
+                    break;
                 }
             }
         }));
-        animator.SetTrigger("Fireball");
-        // If no valid position or no enemy clicked, cancel ability
+
         if (!clickCompleted || targetPos == Vector3.zero)
         {
-            Time.timeScale = 1f; // Ensure the game time resumes
+            Time.timeScale = 1f;
+            activeAbility = null;
+            Debug.Log("Fireball ability canceled: No valid target.");
             yield break;
         }
 
-        Vector3 playerPos = new Vector3(transform.position.x, 3f, transform.position.z);
+        Vector3 playerPos = transform.position;
+        playerPos.y += 3f;
+        targetPos = new Vector3(targetPos.x, playerPos.y, targetPos.z);
+
+        animator.SetTrigger("Fireball");
         GameObject fireball = Instantiate(fireballPrefab, playerPos, Quaternion.identity);
         Rigidbody rb = fireball.GetComponent<Rigidbody>();
-        targetPos.y = 3f; // Adjust the height of the target position
-        Vector3 direction = (targetPos - playerPos);
-        rb.velocity = direction.normalized * 10f; // Adjust speed as needed
+
+        if (rb == null)
+        {
+            Debug.LogError("No Rigidbody attached to fireballPrefab!");
+            activeAbility = null;
+            yield break;
+        }
+
+        Vector3 direction = (targetPos - playerPos).normalized;
+        rb.velocity = direction * 10f;
+        activeAbility = null;
         Time.timeScale = 1f;
         yield return new WaitForSeconds(0.5f);
     }
 
-
     private IEnumerator CastInferno()
     {
-        // Wait for the player to right-click and get the position
+        activeAbility = "Inferno";
         Vector3 targetPos = Vector3.zero;
         bool clickCompleted = false;
         Time.timeScale = 0.1f;
         animator.SetTrigger("CastSpell");
 
-        // Start waiting for the mouse click
         yield return StartCoroutine(WaitForMouseClick(pos =>
         {
-            targetPos = new Vector3(pos.x,transform.position.y,pos.z);
+            targetPos = pos;
             clickCompleted = true;
         }));
 
-        // If no valid position, cancel ability
         if (!clickCompleted || targetPos == Vector3.zero)
         {
             yield break;
@@ -192,6 +228,7 @@ public class SorcererAbilityManager : MonoBehaviour
         GameObject inferno = Instantiate(infernoPrefab, targetPos, Quaternion.identity);
         Destroy(inferno, infernoDuration);
         Time.timeScale = 1f;
+        activeAbility = null;
         yield return new WaitForSeconds(0.5f);
     }
 }

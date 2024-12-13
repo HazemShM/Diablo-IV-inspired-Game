@@ -6,7 +6,7 @@ public class Colliding_Minion : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
             playerInCamp = true;
             Debug.Log("Player has entered the camp.");
@@ -15,7 +15,7 @@ public class Colliding_Minion : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
             playerInCamp = false;
             Debug.Log("Player has left the camp.");

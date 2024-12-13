@@ -14,11 +14,11 @@ public class Minion : MonoBehaviour
     public MinionState currentState;
     public int attackDamage = 5;
     public float damageInterval = 2f;
-    private bool isPlayerInRange = false;
+    private bool isTargetInRange = false;
     private Coroutine damageCoroutine;
-    private Transform player;
+    private Transform target;
     private NavMeshAgent agent;
-    private Animator MinionAnimator;
+    private Animator minionAnimator;
     public float closeDistance = 20f;
     public float attackRange = 2f;
     private Colliding_Minion campCollider;
@@ -26,13 +26,12 @@ public class Minion : MonoBehaviour
     private PlayerController playerController;
     GameObject playerObject;
 
-    // Store the minion's original position
     private Vector3 originalPosition;
 
     void Start()
     {
+        // Find the camp area collider
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
-        Debug.Log(colliders);
         foreach (var collider in colliders)
         {
             if (collider.CompareTag("Camp"))
@@ -50,93 +49,113 @@ public class Minion : MonoBehaviour
             Debug.LogWarning($"{gameObject.name} could not find its camp!");
         }
 
-        MinionAnimator = GetComponent<Animator>();
+        minionAnimator = GetComponent<Animator>();
         playerObject = GameObject.FindGameObjectWithTag("Player");
-        player = playerObject.transform;
+        target = playerObject.transform;
         currentState = MinionState.Alerted;
 
-        // Store the original position of the minion
         originalPosition = transform.position;
-
-        Debug.Log("Minion state is: " + currentState);
     }
 
     void Update()
     {
-        if (campCollider.playerInCamp)
+        if (currentState == MinionState.Alerted)
         {
-            if (currentState == MinionState.Alerted)
+            if (campCollider.playerInCamp)
             {
-                float distance = Vector3.Distance(transform.position, player.position);
-                Vector3 directionToTarget = (player.position - transform.position).normalized;
-                directionToTarget.y = 0;
-                transform.rotation = Quaternion.LookRotation(directionToTarget);
-
-                if (distance <= attackRange)
-                {
-                    agent.isStopped = true;
-                    MinionAnimator.SetBool("punch", true);
-                    MinionAnimator.SetBool("run", false);
-                    MinionAnimator.SetBool("idle", false);
-                }
-                else
-                {
-                    if(GetComponent<Enemy>().health > 0){
-                        agent.isStopped = false;
-                    }
-                    agent.SetDestination(player.position);
-                    MinionAnimator.SetBool("run", true);
-                    MinionAnimator.SetBool("idle", false);
-                    MinionAnimator.SetBool("punch", false);
-                }
-            }
-        }
-        else
-        {
-            // When the player leaves the camp, move back to the original position
-            if (agent.remainingDistance <= agent.stoppingDistance)
-            {
-                // The minion has reached its original position
-                MinionAnimator.SetBool("idle", true);
-                MinionAnimator.SetBool("run", false);
-                MinionAnimator.SetBool("punch", false);
+                HandleTargeting();
             }
             else
             {
-                if(GetComponent<Enemy>().health > 0){
-                    agent.isStopped = false;
-                }
-                agent.SetDestination(originalPosition); // Move back to the original position
-                MinionAnimator.SetBool("run", true);
-                MinionAnimator.SetBool("idle", false);
-                MinionAnimator.SetBool("punch", false);
+                ReturnToOriginalPosition();
             }
         }
+    }
 
+    private void HandleTargeting()
+    {
+        if (target == null) return;
 
+        float distance = Vector3.Distance(transform.position, target.position);
+
+        if (distance > closeDistance)
+        {
+            ReturnToOriginalPosition();
+            return;
+        }
+
+        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        directionToTarget.y = 0; // Keep movement flat
+        transform.rotation = Quaternion.LookRotation(directionToTarget);
+
+        if (distance <= attackRange)
+        {
+            agent.isStopped = true;
+            minionAnimator.SetBool("punch", true);
+            minionAnimator.SetBool("run", false);
+            minionAnimator.SetBool("idle", false);
+        }
+        else
+        {
+            if (GetComponent<Enemy>().health > 0)
+            {
+                agent.isStopped = false;
+            }
+            agent.SetDestination(target.position);
+            minionAnimator.SetBool("run", true);
+            minionAnimator.SetBool("idle", false);
+            minionAnimator.SetBool("punch", false);
+        }
+    }
+
+    private void ReturnToOriginalPosition()
+    {
+        if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            minionAnimator.SetBool("idle", true);
+            minionAnimator.SetBool("run", false);
+            minionAnimator.SetBool("punch", false);
+        }
+        else
+        {
+            if (GetComponent<Enemy>().health > 0)
+            {
+                agent.isStopped = false;
+            }
+            agent.SetDestination(originalPosition);
+            minionAnimator.SetBool("run", true);
+            minionAnimator.SetBool("idle", false);
+            minionAnimator.SetBool("punch", false);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
-            isPlayerInRange = true;
-            playerController = other.GetComponent<PlayerController>();
+            isTargetInRange = true;
+            if (other.CompareTag("Player"))
+            {
+                playerController = other.GetComponent<PlayerController>();
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
-            isPlayerInRange = false;
-            playerController = null;
+            isTargetInRange = false;
+            if (other.CompareTag("Player"))
+            {
+                playerController = null;
+            }
         }
     }
 
     public void DealDamageToPlayer()
     {
-        if (isPlayerInRange && player != null)
+        if (isTargetInRange && playerController != null)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");
@@ -147,5 +166,11 @@ public class Minion : MonoBehaviour
     {
         currentState = MinionState.Alerted;
         Debug.Log("Minion is now Alerted!");
+    }
+
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+        HandleTargeting();
     }
 }
