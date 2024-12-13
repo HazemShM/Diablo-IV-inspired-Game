@@ -134,7 +134,7 @@ public class Minion : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isPlayerInRange && player != null)
+        if (isPlayerInRange && player != null && !playerController.isShieldActive)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");

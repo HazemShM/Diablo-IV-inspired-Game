@@ -247,6 +247,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: bottle_blue (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: da8a393ba24fc6f49842d87b0937b84d, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: da8a393ba24fc6f49842d87b0937b84d, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.3

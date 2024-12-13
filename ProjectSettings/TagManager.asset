@@ -21,6 +21,8 @@ TagManager:
   - Fireball
   - heal
   - rune
+  - Spikes
+  - destroyable
   layers:
   - Default
   - TransparentFX
@@ -31,7 +33,7 @@ TagManager:
   - Walkable
   - Enemies
   - minimap
-  - 
+  - items
   - 
   - 
   - 

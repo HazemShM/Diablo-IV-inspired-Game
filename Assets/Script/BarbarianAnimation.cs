@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -18,6 +19,8 @@ public class BarbarianAnimation : MonoBehaviour
     [SerializeField]
     private InputAction selectTarget = new InputAction();
     private Transform selectedTarget;
+    [SerializeField]
+    private NavMeshSurface navmesh;
     private PlayerController playerController;
     private List<Ability> abilities = new List<Ability>();
     public Ability currentAbility;
@@ -29,6 +32,11 @@ public class BarbarianAnimation : MonoBehaviour
     public AudioClip chargeAttackSound;
     public GameObject hitParticle;
     public bool weaponColliderEnabled;
+    bool rebuildNavMesh;
+    [SerializeField]
+    private GameObject shieldEffectPrefab; // Visual effect for the shield
+    private GameObject activeShieldEffect; // Instance of the shield effect
+    private float shieldDuration = 3.0f;
     public void Start()
     {
         cam = Camera.main;
@@ -38,6 +46,7 @@ public class BarbarianAnimation : MonoBehaviour
         anim = GetComponent<Animator>();
         ac = GetComponent<AudioSource>();
         Ability basicAbillity = new Ability(AbilityType.Basic, "Bash", KeyCode.Mouse1, 5, 1);
+        rebuildNavMesh = false;
         basicAbillity.unlockAbility();
         abilities.Add(basicAbillity);
         abilities.Add(new Ability(AbilityType.Defensive, "Shield", KeyCode.W, 0, 10));
@@ -47,6 +56,12 @@ public class BarbarianAnimation : MonoBehaviour
 
     public void Update()
     {
+        if (rebuildNavMesh)
+        {
+            navmesh.BuildNavMesh();
+            Debug.Log("rebuild nav mesh");
+            rebuildNavMesh = false;
+        }
         foreach (var ability in abilities)
         {
             if (playerController.defensiveUnlock)
@@ -116,8 +131,7 @@ public class BarbarianAnimation : MonoBehaviour
             }
             else if (currentAbility.type == AbilityType.Defensive)
             {
-                Debug.Log("Shield");
-                isUsingAbility = false;
+                Shield();
             }
             else if (currentAbility.type == AbilityType.WildCard)
             {
@@ -137,6 +151,49 @@ public class BarbarianAnimation : MonoBehaviour
         ability.isOnCooldown = true;
         ability.cooldownTimer = ability.cooldownTime;
         isUsingAbility = true;
+    }
+    public void Shield()
+    {
+        if (playerController.isShieldActive)
+        {
+            Debug.Log("Shield is already active!");
+            return;
+        }
+
+        playerController.isShieldActive = true;
+
+        // Play shield activation animation
+        anim.SetTrigger("Shield");
+
+        // Activate visual effect
+        if (shieldEffectPrefab != null)
+        {
+            activeShieldEffect = Instantiate(
+                shieldEffectPrefab,
+                transform.position,
+                Quaternion.identity,
+                transform
+            );
+        }
+
+        Debug.Log("Shield activated!");
+        isUsingAbility = false;
+        // Start the shield duration coroutine
+        StartCoroutine(ShieldDurationCoroutine());
+    }
+
+    private IEnumerator ShieldDurationCoroutine()
+    {
+        yield return new WaitForSeconds(shieldDuration);
+
+        // Deactivate shield after duration
+        playerController.isShieldActive = false;
+        if (activeShieldEffect != null)
+        {
+            Destroy(activeShieldEffect);
+        }
+
+        Debug.Log("Shield expired!");
     }
 
     public void IronMaelstorm()
@@ -236,6 +293,11 @@ public class BarbarianAnimation : MonoBehaviour
     private List<Enemy> enemiesInRange = new List<Enemy>();
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("destroyable") && !canAttack && currentAbility.type == AbilityType.Ultimate)
+        {
+            Destroy(other.gameObject);
+            rebuildNavMesh = true;
+        }
         if (other.CompareTag("Enemy"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
@@ -275,8 +337,11 @@ public class BarbarianAnimation : MonoBehaviour
         }
         else if (other.CompareTag("Spikes"))
         {
-            playerController.TakeDamage(30);
-            Debug.Log($"Player hit spikes, -30 hp, Player Health: {playerController.currentHP}");
+            if (!playerController.isShieldActive)
+            {
+                playerController.TakeDamage(30);
+                Debug.Log($"Player hit spikes, -30 hp, Player Health: {playerController.currentHP}");
+            }
         }
 
     }
