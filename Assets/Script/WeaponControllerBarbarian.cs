@@ -74,18 +74,22 @@ public class WeaponControllerBarbarian : MonoBehaviour
                     }
                     else if (lilith.isShieldActive)
                     {
-                        lilith.shieldHealth -= barbarian.currentAbility.damage;
-                        Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                        if (!lilith.isAuraActive)
+                        {
+                            lilith.shieldHealth -= barbarian.currentAbility.damage;
+                            Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                        }
 
                         if (lilith.shieldHealth <= 0)
                         {
                             lilith.CheckShieldDestroyed();
                         }
-                        else
+                        else if (lilith.isAuraActive)
                         {
                             Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
                             playerController.ReflectDamage((int)barbarian.currentAbility.damage + 15);
-
+                            lilith.isAuraActive = false;
+                            StartCoroutine(lilith.ReflectiveAuraCountdown());
                         }
                     }
                     else
