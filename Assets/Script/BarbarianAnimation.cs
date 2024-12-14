@@ -246,18 +246,21 @@ public class BarbarianAnimation : MonoBehaviour
             }
             else if (lilith.isShieldActive)
             {
-                lilith.shieldHealth -= currentAbility.damage;
-                Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
-
+                if (!lilith.isAuraActive)
+                {
+                    lilith.shieldHealth -= currentAbility.damage;
+                    Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                }
                 if (lilith.shieldHealth <= 0)
                 {
-                    lilith.CheckShieldDestroyed();
+                    StartCoroutine(lilith.CheckShieldDestroyed());
                 }
-                else
+                if (lilith.isAuraActive)
                 {
                     Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
                     playerController.ReflectDamage((int)currentAbility.damage + 15);
-
+                    lilith.isAuraActive = false;
+                    StartCoroutine(lilith.ReflectiveAuraCountdown());
                 }
             }
             else
@@ -312,17 +315,21 @@ public class BarbarianAnimation : MonoBehaviour
                 {
                     if (lilith.isShieldActive)
                     {
-                        lilith.shieldHealth -= currentAbility.damage;
-                        Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
-
+                        if (!lilith.isAuraActive)
+                        {
+                            lilith.shieldHealth -= currentAbility.damage;
+                            Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                        }
                         if (lilith.shieldHealth <= 0)
                         {
                             lilith.CheckShieldDestroyed();
                         }
-                        else
+                        else if (lilith.isAuraActive)
                         {
                             Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
-                            playerController.ReflectDamage((int)currentAbility.damage);
+                            playerController.ReflectDamage(20 + 15);
+                            lilith.isAuraActive = false;
+                            StartCoroutine(lilith.ReflectiveAuraCountdown());
                         }
                     }
                     else

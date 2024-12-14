@@ -52,6 +52,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lilith
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -111,12 +119,20 @@ MonoBehaviour:
   minions: {fileID: 7535427169960116147, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
   Bloodspikes: {fileID: 899356334554196527, guid: 96fa8e3437b501a40b41a7938fa54bd6, type: 3}
   maxMinions: 3
-  activeMinions: []
-  Phase: 
   shield: {fileID: 3377181292992421420, guid: 48c5715f9603c3842a353516a8baefbb, type: 3}
+  activeMinions: []
+  Phase: 0
   shieldHealth: 50
   bossHealth: 50
   isShieldActive: 0
+  CanUseReflectiveAura: 1
+  isAuraActive: 0
+  CanUseBloodySpikes: 0
+  CanUseSummonMinions: 1
+  CanUseDiveBomb: 0
+  HitbyDiveBomb: 0
+  EffectedByPlayerUlt: 0
+  TransitioningToPhase2: 0
   BloodSpikesSound: {fileID: 8300000, guid: b9fd494d4d4790f4f89933008b611f13, type: 3}
   DiveBombSound: {fileID: 8300000, guid: 2b839c6f1a4857f48871e74a03a5235c, type: 3}
   ShieldSound: {fileID: 8300000, guid: 14520dc7dabb1c740b475ae08fc457b5, type: 3}

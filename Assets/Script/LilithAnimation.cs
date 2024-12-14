@@ -8,14 +8,15 @@ public class LilithAnimation : MonoBehaviour
     [SerializeField] GameObject minions;
     [SerializeField] GameObject Bloodspikes;
     [SerializeField] private int maxMinions = 3;
-    [SerializeField] GameObject shield;
+    [SerializeField] GameObject shield; // Shield
     public List<GameObject> activeMinions = new List<GameObject>();
     public int Phase;
     public float shieldHealth = 50f;
     public float bossHealth = 50f;
     public bool isShieldActive = false;
     public bool CanUseReflectiveAura = true;
-    public bool CanUseBloodySpikes = false; // Because when we start phase 2, we need to deploy the shield (As per PDF)
+    public bool isAuraActive = false;
+    public bool CanUseBloodySpikes = true; // Because at the start of phase 2, we deploy the shield & deploy the aura with it 
     public bool CanUseSummonMinions = true;
     public bool CanUseDiveBomb = false; // Just like phase 2. Why? Because I can.
     public bool HitbyDiveBomb = false;
@@ -45,24 +46,23 @@ public class LilithAnimation : MonoBehaviour
     void Update()
     {
         LookAtPlayer();
-
+        UpdateActiveMinions();
         if (Phase == 1)
         {
-            UpdateActiveMinions();
-            if (CanUseSummonMinions && activeMinions.Count == 0)
-            {
-                SummonMinions();
-            }
-            else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
-            {
-                StartCoroutine(DiveBomb());
-            }
+            // if (CanUseSummonMinions && activeMinions.Count == 0)
+            // {
+            //     SummonMinions();
+            // }
+            // else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
+            // {
+            //     StartCoroutine(DiveBomb());
+            // }
         }
         else if (Phase == 2)
         {
             if (!TransitioningToPhase2)
             {
-                if (CanUseBloodySpikes && !isShieldActive) // Use Bloody Spikes if available
+                if (CanUseBloodySpikes && !isAuraActive) // Use Bloody Spikes if available
                 {
                     BloodSpikes();
                 }
@@ -166,34 +166,41 @@ public class LilithAnimation : MonoBehaviour
 
     public IEnumerator ReflectiveAura()
     {
-        CanUseReflectiveAura = false;
         animator.SetTrigger("ReflectiveAura");
-        isShieldActive = true;
-        shieldHealth = 50f;
-        Vector3 spawnPosition = transform.position + new Vector3(0, 0.2f, 0);
-        Quaternion spawnRotation = Quaternion.identity;
+        Debug.Log("Aura Activated");
+        CanUseReflectiveAura = false;
+        isAuraActive = true;
         yield return new WaitForSeconds(0.2f);
         ac.PlayOneShot(ShieldSound);
-        yield return new WaitForSeconds(1.5f);
-        shieldInstance = Instantiate(shield, spawnPosition, spawnRotation);
-        shieldInstance.transform.SetParent(transform);
-        StartCoroutine(ReflectiveAuraCountdown());
     }
 
     public IEnumerator ReflectiveAuraCountdown()
     {
-        yield return new WaitForSeconds(15); // Shield active duration
-        CheckShieldDestroyed();
+        yield return new WaitForSeconds(2);
         CanUseBloodySpikes = true;
-        yield return new WaitForSeconds(10); // Shield recharge duration
+        Debug.Log("Reflective aura cooldown started.");
+        yield return new WaitForSeconds(20);
         CanUseReflectiveAura = true;
+        Debug.Log("Reflective aura is ready.");
     }
 
-    public void CheckShieldDestroyed()
+    public IEnumerator CheckShieldDestroyed()
     {
         isShieldActive = false;
         Destroy(shieldInstance);
         Debug.Log("Shield destroyed!");
+        yield return new WaitForSeconds(10);
+        ActivateShield();
+    }
+
+    public void ActivateShield()
+    {
+        isShieldActive = true;
+        shieldHealth = 50f;
+        Vector3 spawnPosition = transform.position + new Vector3(0, 0.2f, 0);
+        Quaternion spawnRotation = Quaternion.identity;
+        shieldInstance = Instantiate(shield, spawnPosition, spawnRotation);
+        shieldInstance.transform.SetParent(transform);
     }
 
     public void BloodSpikes()
@@ -207,9 +214,9 @@ public class LilithAnimation : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         Vector3 spawnPosition = transform.position + transform.forward * 4.0f;
-        spawnPosition.y = -4;
+        spawnPosition.y = -3;
         GameObject bloodspikes = Instantiate(Bloodspikes, spawnPosition, Quaternion.LookRotation(transform.forward));
-        yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, 0, 1.0f));
+        yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, 2, 1.0f));
         ac.PlayOneShot(BloodSpikesSound);
         yield return new WaitForSeconds(1.8f);
         yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, -4, 1.0f));
@@ -248,11 +255,22 @@ public class LilithAnimation : MonoBehaviour
         {
             return;
         }
-        if (isShieldActive)
+        else if (isAuraActive)
+        {
+            isAuraActive = false; // Deactivate the aura
+            Debug.Log("Aura destroyed! Reflecting damage to the player.");
+            StartCoroutine(ReflectiveAuraCountdown()); // Start cooldown
+            if (playerController != null && !playerController.isShieldActive)
+            {
+                playerController.ReflectDamage((int)damageAmount + 15);
+                Debug.Log($"Reflected {damageAmount} damage to the player.");
+            }
+            return;
+        }
+        else if (isShieldActive)
         {
             shieldHealth -= damageAmount;
             Debug.Log($"Shield health: {shieldHealth}");
-            playerController.ReflectDamage(15);
             Debug.Log($"Player health: {playerController.hpbar}");
             if (shieldHealth <= 0)
             {
@@ -288,6 +306,7 @@ public class LilithAnimation : MonoBehaviour
         }
     }
 
+
     private IEnumerator Die()
     {
         animator.SetBool("Dead", true);
@@ -298,11 +317,12 @@ public class LilithAnimation : MonoBehaviour
     private IEnumerator TransitionToPhase2()
     {
         Phase = 2;
-        bossHealth = 100;
+        bossHealth = 50;
         Debug.Log("Transitioning to Phase 2...");
         animator.SetTrigger("Phase1Ended");
         TransitioningToPhase2 = true;
         yield return new WaitForSeconds(5);
         TransitioningToPhase2 = false;
+        ActivateShield();
     }
 }
