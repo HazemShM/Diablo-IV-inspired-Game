@@ -46,32 +46,32 @@ public class LilithAnimation : MonoBehaviour
     {
         LookAtPlayer();
 
-        // if (Phase == 1)
-        // {
-        //     UpdateActiveMinions();
-        //     if (CanUseSummonMinions && activeMinions.Count == 0)
-        //     {
-        //         SummonMinions();
-        //     }
-        //     else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
-        //     {
-        //         StartCoroutine(DiveBomb());
-        //     }
-        // }
-        // else if (Phase == 2)
-        // {
-        //     if (!TransitioningToPhase2)
-        //     {
-        //         if (CanUseBloodySpikes && !isShieldActive) // Use Bloody Spikes if available
-        //         {
-        //             BloodSpikes();
-        //         }
-        //         else if (CanUseReflectiveAura) // Use Reflective Aura if available
-        //         {
-        //             StartCoroutine(ReflectiveAura());
-        //         }
-        //     }
-        // }
+        if (Phase == 1)
+        {
+            UpdateActiveMinions();
+            if (CanUseSummonMinions && activeMinions.Count == 0)
+            {
+                SummonMinions();
+            }
+            else if (activeMinions.Count > 0 && CanUseDiveBomb && !CanUseSummonMinions)
+            {
+                StartCoroutine(DiveBomb());
+            }
+        }
+        else if (Phase == 2)
+        {
+            if (!TransitioningToPhase2)
+            {
+                if (CanUseBloodySpikes && !isShieldActive) // Use Bloody Spikes if available
+                {
+                    BloodSpikes();
+                }
+                else if (CanUseReflectiveAura) // Use Reflective Aura if available
+                {
+                    StartCoroutine(ReflectiveAura());
+                }
+            }
+        }
     }
 
     private void LookAtPlayer()
@@ -147,7 +147,7 @@ public class LilithAnimation : MonoBehaviour
             {
                 HitbyDiveBomb = true;
                 PlayerController playerController = collider.GetComponent<PlayerController>();
-                if (playerController != null)
+                if (playerController != null && !playerController.isShieldActive)
                 {
                     playerController.TakeDamage(20);
                     Debug.Log("Player hit by DiveBomb!");
