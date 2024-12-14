@@ -165,6 +165,10 @@ public class PlayerController : MonoBehaviour
 
     public void GainXP(int xp)
     {
+        if (currentLevel == 4)
+        {
+            return;
+        }
         currentXP += xp;
         Debug.Log($"Gained {xp} XP. Current XP: {currentXP}/{maxXP}");
 

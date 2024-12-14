@@ -10,7 +10,7 @@ public class demonControll : MonoBehaviour
 
     void Start()
     {
-        AgEnemyIndex = Random.Range(0, 2);
+        AgEnemyIndex = Random.Range(0, enemies.Length);
     }
 
     void Update()
@@ -30,7 +30,7 @@ public class demonControll : MonoBehaviour
 
         if (enemies[AgEnemyIndex].isDead)
         {
-            AgEnemyIndex = Random.Range(0, 2);
+            AgEnemyIndex = Random.Range(0, enemies.Length);
         }
         if (!enemies[AgEnemyIndex].isAggressive)
         {
