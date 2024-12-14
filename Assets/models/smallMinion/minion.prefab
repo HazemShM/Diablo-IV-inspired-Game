@@ -886,7 +886,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad1e6c20bdab9b6408ad3cc9ed0e5d99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: 0
+  currentState: 1
   attackDamage: 5
   damageInterval: 2
   closeDistance: 10
