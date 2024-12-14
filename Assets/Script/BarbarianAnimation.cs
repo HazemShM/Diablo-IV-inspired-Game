@@ -27,8 +27,7 @@ public class BarbarianAnimation : MonoBehaviour
     public bool canAttack = true;
     bool isUsingAbility = false;
     bool isCharging = false;
-    public AudioClip bashAttackSound;
-    public AudioClip ironMaelstormAttackSound;
+    public AudioClip shieldSound;
     public AudioClip chargeAttackSound;
     public GameObject hitParticle;
     public bool weaponColliderEnabled;
@@ -56,6 +55,18 @@ public class BarbarianAnimation : MonoBehaviour
 
     public void Update()
     {
+        if (playerController.defensiveUnlock)
+        {
+            abilities[1].unlockAbility();
+        }
+        if (playerController.wildcardUnlock)
+        {
+            abilities[2].unlockAbility();
+        }
+        if (playerController.ultimateUnlock)
+        {
+            abilities[3].unlockAbility();
+        }
         if (rebuildNavMesh)
         {
             navmesh.BuildNavMesh();
@@ -64,18 +75,7 @@ public class BarbarianAnimation : MonoBehaviour
         }
         foreach (var ability in abilities)
         {
-            if (playerController.defensiveUnlock)
-            {
-                abilities[1].unlockAbility();
-            }
-            else if (playerController.wildcardUnlock)
-            {
-                abilities[2].unlockAbility();
-            }
-            else if (playerController.ultimateUnlock)
-            {
-                abilities[3].unlockAbility();
-            }
+
             if (ability.type == AbilityType.Basic)
             {
                 playerController.basicCooldownText.text = $"{(int)ability.cooldownTimer}";
@@ -104,7 +104,7 @@ public class BarbarianAnimation : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(ability.activationKey) && canAttack)
+            if (Input.GetKeyDown(ability.activationKey) && canAttack && ability.unlocked)
             {
                 if (isUsingAbility)
                 {
@@ -178,6 +178,7 @@ public class BarbarianAnimation : MonoBehaviour
 
         Debug.Log("Shield activated!");
         isUsingAbility = false;
+        ac.PlayOneShot(shieldSound);
         // Start the shield duration coroutine
         StartCoroutine(ShieldDurationCoroutine());
     }
@@ -201,7 +202,6 @@ public class BarbarianAnimation : MonoBehaviour
         canAttack = false;
         isUsingAbility = false;
         anim.SetTrigger("IronMaelstorm");
-        ac.PlayOneShot(ironMaelstormAttackSound);
         StartCoroutine(AttackCooldownIronMaelstorm());
     }
 
@@ -276,7 +276,6 @@ public class BarbarianAnimation : MonoBehaviour
         }
         canAttack = false;
         anim.SetTrigger("Bash");
-        ac.PlayOneShot(bashAttackSound);
         StartCoroutine(AttackCooldownBash());
         selectedTarget = null;
     }
@@ -286,7 +285,6 @@ public class BarbarianAnimation : MonoBehaviour
     {
         canAttack = false;
         isUsingAbility = false;
-        ac.PlayOneShot(chargeAttackSound);
         Debug.Log("Charge ability activated! Use right-click to select the charge target.");
         StartCoroutine(ChargeSequence());
     }
@@ -407,11 +405,13 @@ public class BarbarianAnimation : MonoBehaviour
                 if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
                 {
                     targetPosition = hit1.point;
+                    ac.PlayOneShot(chargeAttackSound);
                     Debug.Log("Target position set: " + targetPosition);
                 }
             }
             yield return null;
         }
+
 
 
         Vector3 target = targetPosition.Value;
@@ -454,7 +454,6 @@ public class BarbarianAnimation : MonoBehaviour
 
         agent.isStopped = false;
         agent.ResetPath();
-
         isCharging = false;
         anim.SetBool("isCharging", false);
         canAttack = true;
@@ -487,7 +486,8 @@ public class BarbarianAnimation : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 1f);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 25, playerController.layerMask))
+        int layerMask1 = playerController.layerMask & ~LayerMask.GetMask("Player");
+        if (Physics.Raycast(ray, out hit, 25, layerMask1))
         {
             float hitDistance = Vector3.Distance(ray.origin, hit.point);
             if (hit.transform.CompareTag("Enemy"))
