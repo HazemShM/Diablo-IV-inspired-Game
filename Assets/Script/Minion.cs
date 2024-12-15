@@ -61,7 +61,7 @@ public class Minion : MonoBehaviour
     {
         UpdateTarget();
 
-        if (campCollider != null && campCollider.playerInCamp)
+        if (campCollider != null && (campCollider.playerInCamp || campCollider.cloneInCamp))
         {
             if (currentState == MinionState.Alerted && target != null)
             {
@@ -101,7 +101,7 @@ public class Minion : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, target.position);
 
-        if (!campCollider.playerInCamp)
+        if (!campCollider.playerInCamp && !campCollider.cloneInCamp)
         {
             ReturnToOriginalPosition();
             return;

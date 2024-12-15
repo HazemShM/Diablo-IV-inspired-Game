@@ -25,7 +25,7 @@ public class Navigation : MonoBehaviour
     GameObject playerObject;
     public bool isAggressive;
     public bool isDead;
-
+    public GameObject explosivePrefab;
     void Start()
     {
         isDead = false;
@@ -74,7 +74,7 @@ public class Navigation : MonoBehaviour
     {
         UpdateTarget();
 
-        if (campCollider.playerInCamp && isAggressive)
+        if ((campCollider.cloneInCamp || campCollider.playerInCamp) && isAggressive)
         {
             float distance = Vector3.Distance(transform.position, clone != null ? clone.position : player.position);
 
@@ -128,7 +128,6 @@ public class Navigation : MonoBehaviour
 
     private void UpdateTarget()
     {
-        // Check if a Clone exists and set it as the target
         GameObject cloneObject = GameObject.FindGameObjectWithTag("Clone");
 
         if (cloneObject != null)
@@ -140,7 +139,6 @@ public class Navigation : MonoBehaviour
             clone = null;
         }
 
-        // If no Clone exists, fallback to Player
         if (clone == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -177,11 +175,24 @@ public class Navigation : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isTargetInRange && player != null && !playerController.isShieldActive && !playerController.invincible)
+        if (isTargetInRange && playerController != null && !playerController.isShieldActive && !playerController.invincible)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Demon dealt damage to the player!");
         }
+    }
+
+    public void Throw()
+    {
+        if (isTargetInRange && playerController != null && !playerController.isShieldActive && !playerController.invincible)
+        {
+            playerController.TakeDamage(15);
+            GameObject explosive = Instantiate(explosivePrefab, transform.position, Quaternion.identity);
+            Explosive explosiveScript = explosive.GetComponent<Explosive>();
+            explosiveScript.Initialize(player.position, 15);
+            Debug.Log("Explosive thrown at the Wanderer!");
+        }
+        
     }
 
     private void OnEnable()
