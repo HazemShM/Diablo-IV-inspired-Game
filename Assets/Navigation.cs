@@ -144,7 +144,7 @@ public class Navigation : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isPlayerInRange && player != null && !playerController.isShieldActive)
+        if (isPlayerInRange && player != null && !playerController.isShieldActive && !playerController.invincible)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");

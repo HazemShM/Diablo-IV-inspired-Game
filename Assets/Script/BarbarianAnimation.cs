@@ -74,6 +74,14 @@ public class BarbarianAnimation : MonoBehaviour
             Debug.Log("rebuild nav mesh");
             rebuildNavMesh = false;
         }
+
+        if (playerController.removeCooldown)
+        {
+            abilities[0].cooldownTime = 0;
+            abilities[1].cooldownTime = 0;
+            abilities[2].cooldownTime = 0;
+            abilities[3].cooldownTime = 0;
+        }
         foreach (var ability in abilities)
         {
 
