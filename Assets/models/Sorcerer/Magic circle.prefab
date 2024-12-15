@@ -14752,6 +14752,7 @@ GameObject:
   - component: {fileID: 7133649677200603241}
   - component: {fileID: 4533768601086051422}
   - component: {fileID: 966819824434870326}
+  - component: {fileID: 9204077669492708260}
   m_Layer: 0
   m_Name: Magic circle
   m_TagString: Untagged
@@ -14768,9 +14769,9 @@ Transform:
   m_GameObject: {fileID: 5269444028833215522}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.29, y: -0.12, z: 6.480545}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5047381610774022506}
   - {fileID: 4900473399370534334}
@@ -19634,6 +19635,22 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &9204077669492708260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5269444028833215522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 692291c275719c2479d78950e92a1d74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageRange: 10
+  initialDamage: 10
+  ongoingDamage: 2
+  duration: 5
 --- !u!1 &7117482993686869536
 GameObject:
   m_ObjectHideFlags: 0

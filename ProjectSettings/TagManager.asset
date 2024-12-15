@@ -21,6 +21,7 @@ TagManager:
   - Fireball
   - heal
   - rune
+  - Clone
   - Spikes
   - destroyable
   - NavMesh
