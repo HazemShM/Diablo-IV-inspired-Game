@@ -52,6 +52,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lilith
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -65,6 +73,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2870391791219494900}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5434228071030466544}
   m_SourcePrefab: {fileID: 100100000, guid: abc0b93984a59984e94dd69c234d6323, type: 3}
 --- !u!1 &2170086497253516469 stripped
 GameObject:
@@ -105,14 +116,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1308865489886458805}
-  minions: {fileID: 4084481338172492981, guid: 55133d4ae14ecfd4b8ee232231cd4da8, type: 3}
+  minions: {fileID: 7535427169960116147, guid: ee8bf01e56bb3e641b07d1331b39b23a, type: 3}
   Bloodspikes: {fileID: 899356334554196527, guid: 96fa8e3437b501a40b41a7938fa54bd6, type: 3}
   maxMinions: 3
-  activeMinions: []
-  Phase: 
   shield: {fileID: 3377181292992421420, guid: 48c5715f9603c3842a353516a8baefbb, type: 3}
+  activeMinions: []
+  Phase: 0
   shieldHealth: 50
   bossHealth: 50
+  isShieldActive: 0
+  CanUseReflectiveAura: 1
+  isAuraActive: 0
+  CanUseBloodySpikes: 0
+  CanUseSummonMinions: 1
+  CanUseDiveBomb: 0
+  HitbyDiveBomb: 0
+  EffectedByPlayerUlt: 0
+  TransitioningToPhase2: 0
   BloodSpikesSound: {fileID: 8300000, guid: b9fd494d4d4790f4f89933008b611f13, type: 3}
   DiveBombSound: {fileID: 8300000, guid: 2b839c6f1a4857f48871e74a03a5235c, type: 3}
   ShieldSound: {fileID: 8300000, guid: 14520dc7dabb1c740b475ae08fc457b5, type: 3}
@@ -213,3 +233,24 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &5434228071030466544
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2170086497253516469}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 3, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}

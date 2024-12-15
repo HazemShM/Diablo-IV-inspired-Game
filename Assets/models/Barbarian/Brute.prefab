@@ -113,7 +113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 269.4
+      value: 246.07
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -152,6 +152,10 @@ PrefabInstance:
       value: Brute
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -184,6 +188,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7022179680357625004}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3518434718606227442}
     - targetCorrespondingSourceObject: {fileID: 201253961220923684, guid: f2524b51a0655b545b7cd720418b9b0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6357603472432948352}
@@ -210,6 +217,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barbarian: {fileID: 5938973600601099842}
   hitParticle: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
+  playerController: {fileID: 0}
+  weaponCollider: {fileID: 0}
 --- !u!65 &6581022292929662116
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -336,6 +345,7 @@ MonoBehaviour:
   abilityPoints: 0
   healingPotions: 0
   runeFragments: 0
+  isShieldActive: 0
   normalSpeed: 0
   wildcardUnlock: 0
   defensiveUnlock: 0
@@ -370,11 +380,13 @@ MonoBehaviour:
       m_Action: Select Target
       m_Flags: 0
     m_Flags: 0
+  navmesh: {fileID: 0}
   canAttack: 1
-  bashAttackSound: {fileID: 0}
-  ironMaelstormAttackSound: {fileID: 0}
-  chargeAttackSound: {fileID: 0}
+  shieldSound: {fileID: 8300000, guid: 6843b584450131c408cecae3b8511c53, type: 3}
+  chargeAttackSound: {fileID: 8300000, guid: 428d452f3a6747f49baa0b3e0953be45, type: 3}
   hitParticle: {fileID: 194062, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
+  weaponColliderEnabled: 0
+  shieldEffectPrefab: {fileID: 1289543790355709915, guid: b99922c2f59b1a542bdd06ae8bee47ae, type: 3}
 --- !u!65 &5160694495814335102
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -394,8 +406,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 3, z: 1}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Size: {x: 1, y: 2.6753213, z: 1}
+  m_Center: {x: 0, y: 0.8376607, z: 0}
 --- !u!54 &7022179680357625004
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -423,3 +435,99 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!82 &3518434718606227442
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6772498599744439899}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

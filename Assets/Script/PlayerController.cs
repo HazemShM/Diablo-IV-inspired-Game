@@ -40,12 +40,14 @@ public class PlayerController : MonoBehaviour
     public int healingPotions = 0;
     public int runeFragments = 0;
     bool die = false;
+
+    public bool isShieldActive = false; // Whether the shield is currently active
     public float normalSpeed;
     public bool wildcardUnlock;
     public bool defensiveUnlock;
     public bool ultimateUnlock;
     private void Start()
-    {   
+    {
         hpbar = GameObject.FindWithTag("hpbar")?.GetComponent<HorizontalProgressBar>();
         xpbar = GameObject.FindWithTag("xpbar")?.GetComponent<HorizontalProgressBar>();
         hpText = GameObject.FindWithTag("hpText")?.GetComponent<TextMeshProUGUI>();
@@ -58,7 +60,7 @@ public class PlayerController : MonoBehaviour
         wildcardCooldownText = GameObject.FindWithTag("wildcardCooldownText")?.GetComponent<TextMeshProUGUI>();
         defensiveCooldownText = GameObject.FindWithTag("defensiveCooldownText")?.GetComponent<TextMeshProUGUI>();
         ultimateCooldownText = GameObject.FindWithTag("ultimateCooldownText")?.GetComponent<TextMeshProUGUI>();
-        
+
         if (hpbar == null) Debug.LogError("HP Bar GameObject not found!");
         if (xpbar == null) Debug.LogError("XP Bar GameObject not found!");
         if (hpText == null) Debug.LogError("HP Text UI not found!");
@@ -71,7 +73,7 @@ public class PlayerController : MonoBehaviour
         if (wildcardCooldownText == null) Debug.LogError("Wildcard Cooldown Text UI not found!");
         if (defensiveCooldownText == null) Debug.LogError("Defensive Cooldown Text UI not found!");
         if (ultimateCooldownText == null) Debug.LogError("Ultimate Cooldown Text UI not found!");
-        
+
         cam = Camera.main;
         agent = GetComponent<NavMeshAgent>();
         OnSpeedChanged += SetSpeed;
@@ -87,7 +89,26 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F)){
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Heal();
+        }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            currentHP = Mathf.Min(currentHP + 20, maxHP); // Heal but don't exceed maxHP
+            updateHP(currentHP);
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            currentHP -= 20;
+            updateHP(currentHP);
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            abilityPoints++;
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
             Heal();
         }
         if (movement.ReadValue<float>() == 1)
@@ -109,18 +130,20 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("heal"))
         {
-            if(healingPotions < 3){
+            if (healingPotions < 3)
+            {
                 healingPotions++;
                 Destroy(other.gameObject);
             }
         }
-        else if(other.CompareTag("rune")){
+        else if (other.CompareTag("rune"))
+        {
             runeFragments++;
             Destroy(other.gameObject);
         }
     }
 
-        private void Heal()
+    private void Heal()
     {
         if (currentHP == maxHP)
         {
@@ -160,6 +183,10 @@ public class PlayerController : MonoBehaviour
 
     public void GainXP(int xp)
     {
+        if (currentLevel == 4)
+        {
+            return;
+        }
         currentXP += xp;
         Debug.Log($"Gained {xp} XP. Current XP: {currentXP}/{maxXP}");
 
@@ -184,7 +211,6 @@ public class PlayerController : MonoBehaviour
         updateXP(currentXP);
         // updateAbilityPoint(abilityPoints);
         // updateLevel(currentLevel);
-
         levelText.text = $"Level {currentLevel}";
         abilityPointsText.text = $"Ability Points: {abilityPoints}";
 
@@ -219,7 +245,7 @@ public class PlayerController : MonoBehaviour
 
     public void HandleInput()
     {
-        if(EventSystem.current.IsPointerOverGameObject()) return;
+        if (EventSystem.current.IsPointerOverGameObject()) return;
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
@@ -253,10 +279,18 @@ public class PlayerController : MonoBehaviour
         xpbar?.SetProgress(progress);
         xpText.text = $"{xp}";
     }
-    public void updateLevel(int level){
+
+    public void ReflectDamage(int reflectedDamage)
+    {
+        Debug.Log($"Player took {reflectedDamage} reflected damage from Lilith's shield!");
+        TakeDamage(reflectedDamage);
+    }
+    public void updateLevel(int level)
+    {
         levelText.text = $"Level {level}";
     }
-    public void updateAbilityPoint(int point){
+    public void updateAbilityPoint(int point)
+    {
         abilityPointsText.text = $"{point}";
     }
 }

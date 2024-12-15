@@ -22,17 +22,20 @@ TagManager:
   - heal
   - rune
   - Clone
+  - Spikes
+  - destroyable
+  - NavMesh
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - Walkable
   - Enemies
   - minimap
-  - 
+  - items
   - 
   - 
   - 

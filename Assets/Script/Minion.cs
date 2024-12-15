@@ -68,6 +68,29 @@ public class Minion : MonoBehaviour
             else
             {
                 ReturnToOriginalPosition();
+                float distance = Vector3.Distance(transform.position, player.position);
+                Vector3 directionToTarget = (player.position - transform.position).normalized;
+                directionToTarget.y = 0;
+                transform.rotation = Quaternion.LookRotation(directionToTarget);
+
+                if (distance <= attackRange)
+                {
+                    agent.isStopped = true;
+                    MinionAnimator.SetBool("punch", true);
+                    MinionAnimator.SetBool("run", false);
+                    MinionAnimator.SetBool("idle", false);
+                }
+                else
+                {
+                    if (GetComponent<Enemy>().health > 0)
+                    {
+                        agent.isStopped = false;
+                    }
+                    agent.SetDestination(player.position);
+                    MinionAnimator.SetBool("run", true);
+                    MinionAnimator.SetBool("idle", false);
+                    MinionAnimator.SetBool("punch", false);
+                }
             }
         }
     }
@@ -121,6 +144,14 @@ public class Minion : MonoBehaviour
             if (GetComponent<Enemy>().health > 0)
             {
                 agent.isStopped = false;
+                if (GetComponent<Enemy>().health > 0)
+                {
+                    agent.isStopped = false;
+                }
+                agent.SetDestination(originalPosition); // Move back to the original position
+                MinionAnimator.SetBool("run", true);
+                MinionAnimator.SetBool("idle", false);
+                MinionAnimator.SetBool("punch", false);
             }
             agent.SetDestination(originalPosition);
             minionAnimator.SetBool("run", true);
@@ -128,6 +159,7 @@ public class Minion : MonoBehaviour
             minionAnimator.SetBool("punch", false);
         }
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -155,7 +187,7 @@ public class Minion : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isTargetInRange && playerController != null)
+        if (isPlayerInRange && player != null && !playerController.isShieldActive)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");
@@ -172,5 +204,21 @@ public class Minion : MonoBehaviour
     {
         target = newTarget;
         HandleTargeting();
+      }
+
+private void OnEnable()
+    {
+        GameManager.OnPlayerInstantiated += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerInstantiated -= SetPlayer;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        playerObject = player;
+        this.player = player.transform;
     }
 }

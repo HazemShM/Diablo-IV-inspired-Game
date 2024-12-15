@@ -12,7 +12,7 @@ public class Navigation : MonoBehaviour
     private PlayerController playerController;
     private Colliding_Minion campCollider;
     private GameObject campArea;
-    
+
     private bool isPlayerInRange = false;
     public int attackDamage = 10;
     //new
@@ -21,12 +21,15 @@ public class Navigation : MonoBehaviour
     Vector3 target;
     private bool wasRunningOnThePlayer = false;
     GameObject playerObject;
+    public bool isAggressive;
+    public bool isDead;
 
     void Start()
     {
+        isDead = false;
+        isAggressive = false;
         agent = GetComponent<NavMeshAgent>();
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1f);
-        Debug.Log(colliders);
         foreach (var collider in colliders)
         {
             if (collider.CompareTag("Camp"))
@@ -36,8 +39,6 @@ public class Navigation : MonoBehaviour
             }
         }
 
-        playerObject = GameObject.FindGameObjectWithTag("Player");
-        player = playerObject.transform;
         agent = GetComponent<NavMeshAgent>();
         campCollider = campArea.GetComponent<Colliding_Minion>();
 
@@ -52,7 +53,6 @@ public class Navigation : MonoBehaviour
         {
             target = points[currentpointIndex];
             agent.SetDestination(target);
-            Debug.Log("hahahah");
         }
     }
 
@@ -71,12 +71,12 @@ public class Navigation : MonoBehaviour
 
     void Update()
     {
-        if (campCollider.playerInCamp)
+        if (campCollider.playerInCamp && isAggressive)
         {
             float distance = Vector3.Distance(transform.position, player.position);
             if (distance < closeDistance)
-            {   
-                if (animator != null && 
+            {
+                if (animator != null &&
                     !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
                 {
                     animator.SetBool("attack", true);
@@ -84,14 +84,15 @@ public class Navigation : MonoBehaviour
                     animator.SetBool("walk", false);
                 }
             }
-            else{
+            else
+            {
                 agent.isStopped = false;
                 agent.SetDestination(player.position);
-                if (animator != null && 
+                if (animator != null &&
                 !animator.GetCurrentAnimatorStateInfo(0).IsName("Run"))
                 {
                     animator.SetBool("run", true);
-                    animator.SetBool("walk", false); 
+                    animator.SetBool("walk", false);
                     animator.SetBool("attack", false);
                 }
             }
@@ -101,7 +102,7 @@ public class Navigation : MonoBehaviour
         {
             // new
             // agent.isStopped = true;
-            if (animator != null && 
+            if (animator != null &&
             !animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
             {
                 animator.SetBool("walk", true);
@@ -109,11 +110,13 @@ public class Navigation : MonoBehaviour
                 animator.SetBool("attack", false);
             }
             // new
-            if(wasRunningOnThePlayer){
+            if (wasRunningOnThePlayer)
+            {
                 agent.SetDestination(target);
                 wasRunningOnThePlayer = false;
             }
-            if(Vector3.Distance(transform.position, target) < 1){
+            if (Vector3.Distance(transform.position, target) < 1)
+            {
                 currentpointIndex = (currentpointIndex + 1) % points.Length;
                 target = points[currentpointIndex];
                 agent.SetDestination(target);
@@ -141,10 +144,26 @@ public class Navigation : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isPlayerInRange && player != null)
+        if (isPlayerInRange && player != null && !playerController.isShieldActive)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");
         }
+    }
+
+    private void OnEnable()
+    {
+        GameManager.OnPlayerInstantiated += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerInstantiated -= SetPlayer;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        playerObject = player;
+        this.player = player.transform;
     }
 }
