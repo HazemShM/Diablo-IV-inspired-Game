@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting;
@@ -261,6 +262,7 @@ public class PlayerController : MonoBehaviour
             animator.SetTrigger("die");
         }
         die = true;
+        SceneManager.LoadScene(6);
         // Handle player death (disable controls, play animation, etc.)
     }
 
