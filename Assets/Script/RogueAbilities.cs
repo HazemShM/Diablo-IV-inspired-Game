@@ -31,8 +31,15 @@ public class RogueAbilities : MonoBehaviour
     [SerializeField]
     private GameObject hitParticle;
     private PlayerController playerController;
+    private AudioSource audioSource;
+    public AudioClip arrowSound;
+    public AudioClip showerOfArrowsSound;
+    public AudioClip dashSound;
+    public AudioClip smokeSound;
+
     void Start()
-    {
+    {   
+        audioSource = GetComponent<AudioSource>();
         cam = Camera.main;
         playerController = GetComponent<PlayerController>();
         agent = GetComponent<NavMeshAgent>();
@@ -186,7 +193,7 @@ public class RogueAbilities : MonoBehaviour
                 // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(directionToTarget), Time.deltaTime * 2f); 
                 GameObject arrow = Instantiate(arrowPrefab, arrowPoint.position, Quaternion.LookRotation(directionToTarget));
                 Rigidbody rb = arrow.GetComponent<Rigidbody>();
-
+                audioSource.PlayOneShot(arrowSound);
                 if (rb != null)
                 {
                     rb.AddForce(directionToTarget * 25f, ForceMode.Impulse);
@@ -245,6 +252,7 @@ public class RogueAbilities : MonoBehaviour
             Debug.Log($"Shower of Arrows activated at position: {targetPosition}");
 
             GameObject ring = Instantiate(circlePrefab, targetPosition, Quaternion.identity);
+            audioSource.PlayOneShot(showerOfArrowsSound);
             ring.transform.localScale = new Vector3(radius, 1 , radius);
             Destroy(ring, duration);
             Collider[] hitEnemies = Physics.OverlapSphere(targetPosition, radius, layerMask);
@@ -367,21 +375,12 @@ public class RogueAbilities : MonoBehaviour
             agent.speed *= slowMultiplier;
 
             yield return new WaitForSeconds(duration);
-
-            agent.speed = originalSpeed;
+            if(agent){
+                agent.speed = originalSpeed; 
+            }
         }
     }
 
-    // private IEnumerator SmokeBomb()
-    // {
-    //     animator.SetTrigger("SmokeBomb");
-    //     yield return new WaitForSeconds(0.5f);
-
-    //     GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
-    //     Destroy(smoke, 2);
-    //     Debug.Log("Smoke bomb dropped!");
-    //     isUsingAbility = false;
-    // }
     private IEnumerator SmokeBomb()
     {   
         float stunRadius = 5f; 
@@ -389,6 +388,8 @@ public class RogueAbilities : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
+        audioSource.PlayOneShot(smokeSound);
+
         // smoke.transform.GetChild(0).localScale = new Vector3(stunRadius, 2, stunRadius);
         // smokePrefab.transform.localScale = new Vector3(stunRadius, 2, stunRadius);
 
@@ -473,7 +474,7 @@ public class RogueAbilities : MonoBehaviour
         Animator anim = GetComponent<Animator>();
         anim.SetBool("Dash", true);
         anim.SetTrigger("DashTrigger");
-
+        audioSource.PlayOneShot(dashSound);
         float dashSpeed = playerController.normalSpeed*2;
 
         while (Vector3.Distance(transform.position, target) > 0.1f)

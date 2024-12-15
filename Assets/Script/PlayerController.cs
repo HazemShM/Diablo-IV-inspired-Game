@@ -49,8 +49,18 @@ public class PlayerController : MonoBehaviour
     public bool wildcardUnlock;
     public bool defensiveUnlock;
     public bool ultimateUnlock;
+    private AudioSource audioSource;
+    public AudioClip runePickUpSound;
+    public AudioClip healthPickUpSound;
+    public AudioClip healSound;
+    public AudioClip hitSound;
+    public AudioClip deathSound;
+
+
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         hpbar = GameObject.FindWithTag("hpbar")?.GetComponent<HorizontalProgressBar>();
         xpbar = GameObject.FindWithTag("xpbar")?.GetComponent<HorizontalProgressBar>();
         hpText = GameObject.FindWithTag("hpText")?.GetComponent<TextMeshProUGUI>();
@@ -160,11 +170,13 @@ public class PlayerController : MonoBehaviour
                 healingPotions++;
                 Destroy(other.gameObject);
             }
+            audioSource.PlayOneShot(healthPickUpSound);
         }
         else if (other.CompareTag("rune"))
         {
             runeFragments++;
             Destroy(other.gameObject);
+            audioSource.PlayOneShot(runePickUpSound);
         }
     }
 
@@ -189,12 +201,14 @@ public class PlayerController : MonoBehaviour
 
         updateHP(currentHP);
         healingPotionsText.text = $"Healing Potions: {healingPotions}";
+        audioSource.PlayOneShot(healSound);
         animator.SetTrigger("heal");
 
         Debug.Log($"Healed for {healAmount} HP. Current HP: {currentHP}. Healing potions left: {healingPotions}");
     }
     public void TakeDamage(int damage)
-    {
+    {   
+
         currentHP -= damage;
         Debug.Log($"Player took {damage} damage! Current health: {currentHP}");
 
@@ -203,6 +217,11 @@ public class PlayerController : MonoBehaviour
         if (currentHP <= 0)
         {
             Die();
+        }else{
+            if(hitSound){
+                audioSource.PlayOneShot(hitSound);
+            }
+            animator.SetTrigger("hit");
         }
     }
 
@@ -251,6 +270,9 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Player has died!");
             Animator animator = GetComponent<Animator>();
             animator.SetTrigger("die");
+            if(deathSound){
+                audioSource.PlayOneShot(deathSound);
+            }
         }
         die = true;
         SceneManager.LoadScene(6);

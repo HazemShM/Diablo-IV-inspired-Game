@@ -245,6 +245,8 @@ MonoBehaviour:
   infernoSound: {fileID: 8300000, guid: b45d781e10b73a14e92c90bbf54ac7f9, type: 3}
   fireballSound: {fileID: 0}
   cloneSound: {fileID: 8300000, guid: ba010f828a9597741b3a429d8da38bf1, type: 3}
+  explosionRadius: 5
+  explosionDamage: 10
 --- !u!114 &5745023406262625468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -297,11 +299,17 @@ MonoBehaviour:
   abilityPoints: 0
   healingPotions: 0
   runeFragments: 0
+  invincible: 0
   isShieldActive: 0
+  removeCooldown: 0
   normalSpeed: 0
   wildcardUnlock: 0
   defensiveUnlock: 0
   ultimateUnlock: 0
+  gotHit: 0
+  runePickUpSound: {fileID: 8300000, guid: 28038a0f06798044dbd137ab0be39656, type: 3}
+  healthPickUpSound: {fileID: 8300000, guid: 8076103fb0f9baf4db44e560177074d8, type: 3}
+  healSound: {fileID: 8300000, guid: c11b43d3822a805419a7bb5292e6fccd, type: 3}
 --- !u!136 &4295716486845752028
 CapsuleCollider:
   m_ObjectHideFlags: 0
