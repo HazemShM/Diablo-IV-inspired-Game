@@ -13,7 +13,7 @@ public class FireballBehavior : MonoBehaviour
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.health -= 5;
+                enemy.TakeDamage(5);
                 Debug.Log("Fireball hit the enemy! Enemy health is now: " + enemy.health);
             }
             Debug.Log("Fireball hit the enemy!");

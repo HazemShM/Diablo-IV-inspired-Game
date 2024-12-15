@@ -30,13 +30,16 @@ public class SorcererAbilityManager : MonoBehaviour
     public AudioClip fireballSound;
     public AudioClip cloneSound;
 
-    private void Start(){
+    private void Start()
+    {
         animator = GetComponent<Animator>();
         playerController = GetComponent<PlayerController>();
         audioSource = GetComponent<AudioSource>();
     }
-    void PlaySound(AudioClip clip){
-        if (audioSource != null && clip != null){
+    void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
             audioSource.clip = clip;
             audioSource.Play();
         }
@@ -149,7 +152,7 @@ public class SorcererAbilityManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
     }
 
-   private void NotifyEnemiesAboutClone(GameObject clone)
+    private void NotifyEnemiesAboutClone(GameObject clone)
     {
         Minion[] minions = FindObjectsOfType<Minion>();
         foreach (Minion minion in minions)
@@ -239,6 +242,7 @@ public class SorcererAbilityManager : MonoBehaviour
         {
             yield break;
         }
+        targetPos.y = 0;
 
         GameObject inferno = Instantiate(infernoPrefab, targetPos, Quaternion.identity);
         Destroy(inferno, infernoDuration);

@@ -5,7 +5,7 @@ using UnityEngine;
 public class campMinions : MonoBehaviour
 {
     public Minion[] enemies; // Array of minions
-    private int maxAlertedMinions = 5; // Maximum number of alerted minions
+    private int maxAlertedMinions = 4; // Maximum number of alerted minions
     private List<Minion> nonAggressiveMinions = new List<Minion>();
     int alertedCount = 0; // List of non-aggressive minions
 
