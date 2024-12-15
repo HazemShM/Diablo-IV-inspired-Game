@@ -19,6 +19,7 @@ public class Enemy : MonoBehaviour
         health = maxHealth;
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
+        playerObject = GameObject.FindGameObjectWithTag("Player");
     }
 
     void Awake()
