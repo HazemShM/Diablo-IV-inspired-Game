@@ -49,8 +49,8 @@ public class Enemy : MonoBehaviour
         {
             navigation.isDead = true;
         }
-        Destroy(gameObject, 2f);
         playerObject.GetComponent<PlayerController>().GainXP(xp);
+        Destroy(gameObject, 2f);
     }
 
     private void OnEnable()

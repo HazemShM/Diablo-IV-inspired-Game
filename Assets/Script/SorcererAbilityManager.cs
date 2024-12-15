@@ -60,6 +60,13 @@ public class SorcererAbilityManager : MonoBehaviour
     }
     void Update()
     {
+        if (playerController.removeCooldown)
+        {
+            abilities[0].cooldownTime = 0;
+            abilities[1].cooldownTime = 0;
+            abilities[2].cooldownTime = 0;
+            abilities[3].cooldownTime = 0;
+        }
         if (playerController.defensiveUnlock)
         {
             abilities[1].unlockAbility();

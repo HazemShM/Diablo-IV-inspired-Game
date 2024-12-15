@@ -177,7 +177,7 @@ public class Navigation : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isTargetInRange && player != null && !playerController.isShieldActive)
+        if (isTargetInRange && player != null && !playerController.isShieldActive && !playerController.invincible)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Demon dealt damage to the player!");
