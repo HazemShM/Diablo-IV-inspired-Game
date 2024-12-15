@@ -34,6 +34,9 @@ public class SorcererAbilityManager : MonoBehaviour
     public AudioClip fireballSound;
     public AudioClip cloneSound;
     private List<Ability> abilities = new List<Ability>();
+    [SerializeField] private float explosionRadius = 5f;
+    [SerializeField] private float explosionDamage = 10f;
+
 
     private void Start()
     {
@@ -150,7 +153,6 @@ public class SorcererAbilityManager : MonoBehaviour
 
     private IEnumerator CastClone()
     {
-        //animator.SetTrigger("CastClone");
         activeAbility = "Clone";
         Vector3 targetPos = Vector3.zero;
         bool clickCompleted = false;
@@ -173,13 +175,28 @@ public class SorcererAbilityManager : MonoBehaviour
 
             yield return new WaitForSeconds(cloneDuration);
 
-            Destroy(clone);
+            ExplodeClone(clone);
+
             NotifyEnemiesTargetPlayer();
         }
 
         Time.timeScale = 1f;
         activeAbility = null;
         yield return new WaitForSeconds(0.5f);
+    }
+
+    private void ExplodeClone(GameObject clone)
+    {
+        Collider[] hitColliders = Physics.OverlapSphere(clone.transform.position, explosionRadius);
+        foreach (Collider hit in hitColliders)
+        {
+            Enemy minion = hit.GetComponent<Enemy>();
+            if (minion != null)
+            {
+                minion.TakeDamage(explosionDamage);
+            }
+        }
+        Destroy(clone);
     }
 
     private void NotifyEnemiesAboutClone(GameObject clone)
@@ -199,7 +216,6 @@ public class SorcererAbilityManager : MonoBehaviour
             minion.SetTarget(this.transform);
         }
     }
-
 
     private IEnumerator CastFireball()
     {
