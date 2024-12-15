@@ -25,9 +25,21 @@ public class SorcererAbilityManager : MonoBehaviour
 
     Animator animator;
 
+    AudioSource audioSource;
+    public AudioClip infernoSound;
+    public AudioClip fireballSound;
+    public AudioClip cloneSound;
+
     private void Start(){
         animator = GetComponent<Animator>();
         playerController = GetComponent<PlayerController>();
+        audioSource = GetComponent<AudioSource>();
+    }
+    void PlaySound(AudioClip clip){
+        if (audioSource != null && clip != null){
+            audioSource.clip = clip;
+            audioSource.Play();
+        }
     }
     void Update()
     {
@@ -35,6 +47,7 @@ public class SorcererAbilityManager : MonoBehaviour
         {
             nextCloneTime = Time.time + cloneCooldown;
             activeAbility = "Clone";
+            PlaySound(cloneSound);
             StartCoroutine(CastClone());
         }
         else if (Input.GetKeyDown(KeyCode.W) && Time.time >= nextTeleportTime)
@@ -47,11 +60,13 @@ public class SorcererAbilityManager : MonoBehaviour
         {
             nextInfernoTime = Time.time + infernoCooldown;
             activeAbility = "Inferno";
+            PlaySound(infernoSound);
             StartCoroutine(CastInferno());
         }
         else if (Input.GetMouseButtonDown(1) && activeAbility == null && Time.time >= nextFireballTime)
         {
             nextFireballTime = Time.time + fireballCooldown;
+            PlaySound(fireballSound);
             StartCoroutine(CastFireball());
         }
     }
