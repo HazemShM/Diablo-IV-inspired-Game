@@ -1,3 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.AI.Navigation;
+using Unity.VisualScripting;
+using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using UnityEngine;
 using UnityEngine.AI;
@@ -29,12 +34,19 @@ public class SorcererAbilityManager : MonoBehaviour
     public AudioClip infernoSound;
     public AudioClip fireballSound;
     public AudioClip cloneSound;
+    private List<Ability> abilities = new List<Ability>();
 
     private void Start()
     {
         animator = GetComponent<Animator>();
         playerController = GetComponent<PlayerController>();
         audioSource = GetComponent<AudioSource>();
+        Ability basicAbillity = new Ability(AbilityType.Basic, "Fireball", KeyCode.Mouse2, 5, 1);
+        basicAbillity.unlockAbility();
+        abilities.Add(basicAbillity);
+        abilities.Add(new Ability(AbilityType.Defensive, "Teleport", KeyCode.W, 0, 10));
+        abilities.Add(new Ability(AbilityType.WildCard, "Clone", KeyCode.Q, 10, 10));
+        abilities.Add(new Ability(AbilityType.Ultimate, "Inferno", KeyCode.E, 10, 15));
     }
     void PlaySound(AudioClip clip)
     {
@@ -46,20 +58,32 @@ public class SorcererAbilityManager : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q) && Time.time >= nextCloneTime)
+        if (playerController.defensiveUnlock)
+        {
+            abilities[1].unlockAbility();
+        }
+        if (playerController.wildcardUnlock)
+        {
+            abilities[2].unlockAbility();
+        }
+        if (playerController.ultimateUnlock)
+        {
+            abilities[3].unlockAbility();
+        }
+        if (Input.GetKeyDown(KeyCode.Q) && Time.time >= nextCloneTime && abilities[1].unlocked)
         {
             nextCloneTime = Time.time + cloneCooldown;
             activeAbility = "Clone";
             PlaySound(cloneSound);
             StartCoroutine(CastClone());
         }
-        else if (Input.GetKeyDown(KeyCode.W) && Time.time >= nextTeleportTime)
+        else if (Input.GetKeyDown(KeyCode.W) && Time.time >= nextTeleportTime && abilities[2].unlocked)
         {
             nextTeleportTime = Time.time + teleportCooldown;
             activeAbility = "Teleport";
             StartCoroutine(CastTeleport());
         }
-        else if (Input.GetKeyDown(KeyCode.E) && Time.time >= nextInfernoTime)
+        else if (Input.GetKeyDown(KeyCode.E) && Time.time >= nextInfernoTime && abilities[3].unlocked)
         {
             nextInfernoTime = Time.time + infernoCooldown;
             activeAbility = "Inferno";
