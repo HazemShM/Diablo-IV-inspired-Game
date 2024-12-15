@@ -19,6 +19,7 @@ public class Minion : MonoBehaviour
     private Transform target;
     private GameObject targetObject;
     private Transform player;
+    private Transform clone;
     private NavMeshAgent agent;
     private Animator MinionAnimator;
     public float closeDistance = 20f;
@@ -26,8 +27,6 @@ public class Minion : MonoBehaviour
     private Colliding_Minion campCollider;
     private GameObject campArea;
     private PlayerController playerController;
-    GameObject playerObject;
-
     private Vector3 originalPosition;
 
     void Start()
@@ -44,7 +43,7 @@ public class Minion : MonoBehaviour
         }
 
         agent = GetComponent<NavMeshAgent>();
-        campCollider = campArea.GetComponent<Colliding_Minion>();
+        campCollider = campArea != null ? campArea.GetComponent<Colliding_Minion>() : null;
 
         if (campCollider == null)
         {
@@ -60,63 +59,38 @@ public class Minion : MonoBehaviour
 
     void Update()
     {
-        if (GameObject.FindGameObjectWithTag("Clone") != null)
-        {
-            playerObject = GameObject.FindGameObjectWithTag("Clone");
-        }
-        else
-        {
-            playerObject = GameObject.FindGameObjectWithTag("Player");
-        }
-        if (campCollider.playerInCamp)
-        {
-            if (currentState == MinionState.Alerted)
-            {
-                float distance = Vector3.Distance(transform.position, player.position);
-                Vector3 directionToTarget = (player.position - transform.position).normalized;
-                directionToTarget.y = 0;
-                transform.rotation = Quaternion.LookRotation(directionToTarget);
+        UpdateTarget();
 
-                if (distance <= attackRange)
-                {
-                    agent.isStopped = true;
-                    MinionAnimator.SetBool("punch", true);
-                    MinionAnimator.SetBool("run", false);
-                    MinionAnimator.SetBool("idle", false);
-                }
-                else
-                {
-                    if (GetComponent<Enemy>().health > 0)
-                    {
-                        agent.isStopped = false;
-                    }
-                    agent.SetDestination(player.position);
-                    MinionAnimator.SetBool("run", true);
-                    MinionAnimator.SetBool("idle", false);
-                    MinionAnimator.SetBool("punch", false);
-                }
+        if (campCollider != null && campCollider.playerInCamp)
+        {
+            if (currentState == MinionState.Alerted && target != null)
+            {
+                HandleTargeting();
             }
         }
         else
         {
-            // When the player leaves the camp, move back to the original position
-            if (agent.remainingDistance <= agent.stoppingDistance)
+            ReturnToOriginalPosition();
+        }
+    }
+
+    private void UpdateTarget()
+    {
+        GameObject cloneObject = GameObject.FindGameObjectWithTag("Clone");
+
+        if (cloneObject != null)
+        {
+            clone = cloneObject.transform;
+            target = clone;
+        }
+        else
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+
+            if (playerObject != null)
             {
-                // The minion has reached its original position
-                MinionAnimator.SetBool("idle", true);
-                MinionAnimator.SetBool("run", false);
-                MinionAnimator.SetBool("punch", false);
-            }
-            else
-            {
-                if (GetComponent<Enemy>().health > 0)
-                {
-                    agent.isStopped = false;
-                }
-                agent.SetDestination(originalPosition); // Move back to the original position
-                MinionAnimator.SetBool("run", true);
-                MinionAnimator.SetBool("idle", false);
-                MinionAnimator.SetBool("punch", false);
+                player = playerObject.transform;
+                target = player;
             }
         }
     }
@@ -134,7 +108,7 @@ public class Minion : MonoBehaviour
         }
 
         Vector3 directionToTarget = (target.position - transform.position).normalized;
-        directionToTarget.y = 0; // Keep movement flat
+        directionToTarget.y = 0;
         transform.rotation = Quaternion.LookRotation(directionToTarget);
 
         if (distance <= attackRange)
@@ -170,14 +144,6 @@ public class Minion : MonoBehaviour
             if (GetComponent<Enemy>().health > 0)
             {
                 agent.isStopped = false;
-                if (GetComponent<Enemy>().health > 0)
-                {
-                    agent.isStopped = false;
-                }
-                agent.SetDestination(originalPosition); // Move back to the original position
-                MinionAnimator.SetBool("run", true);
-                MinionAnimator.SetBool("idle", false);
-                MinionAnimator.SetBool("punch", false);
             }
             agent.SetDestination(originalPosition);
             MinionAnimator.SetBool("run", true);
@@ -185,7 +151,6 @@ public class Minion : MonoBehaviour
             MinionAnimator.SetBool("punch", false);
         }
     }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -213,7 +178,7 @@ public class Minion : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isTargetInRange && player != null && !playerController.isShieldActive)
+        if (isTargetInRange && playerController != null && !playerController.isShieldActive)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");
@@ -229,7 +194,6 @@ public class Minion : MonoBehaviour
     public void SetTarget(Transform newTarget)
     {
         target = newTarget;
-        HandleTargeting();
     }
 
     private void OnEnable()
@@ -244,11 +208,9 @@ public class Minion : MonoBehaviour
 
     public void SetPlayer(GameObject player)
     {
-        playerObject = player;
-        if (targetObject != null)
+        if (player != null)
         {
-            target = targetObject.transform;
+            this.player = player.transform;
         }
-        this.player = player.transform;
     }
 }
