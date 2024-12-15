@@ -44,6 +44,7 @@ public class BarbarianAnimation : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         ac = GetComponent<AudioSource>();
+        navmesh = GameObject.FindWithTag("NavMesh")?.GetComponent<NavMeshSurface>();
         Ability basicAbillity = new Ability(AbilityType.Basic, "Bash", KeyCode.Mouse1, 5, 1);
         rebuildNavMesh = false;
         basicAbillity.unlockAbility();
@@ -494,7 +495,7 @@ public class BarbarianAnimation : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction * 10, Color.red, 1f);
         RaycastHit hit;
         int layerMask1 = playerController.layerMask & ~LayerMask.GetMask("Player");
-        if (Physics.Raycast(ray, out hit, 25, layerMask1))
+        if (Physics.Raycast(ray, out hit, 30, layerMask1))
         {
             float hitDistance = Vector3.Distance(ray.origin, hit.point);
             if (hit.transform.CompareTag("Enemy"))

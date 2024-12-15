@@ -23,6 +23,7 @@ TagManager:
   - rune
   - Spikes
   - destroyable
+  - NavMesh
   layers:
   - Default
   - TransparentFX

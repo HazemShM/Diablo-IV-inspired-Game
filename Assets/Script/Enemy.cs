@@ -19,7 +19,6 @@ public class Enemy : MonoBehaviour
         health = maxHealth;
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
-        playerObject = GameObject.FindGameObjectWithTag("Player");
     }
 
     void Awake()
@@ -50,9 +49,25 @@ public class Enemy : MonoBehaviour
         {
             navigation.isDead = true;
         }
-        Destroy(gameObject, 3f);
+        Destroy(gameObject, 2f);
         playerObject.GetComponent<PlayerController>().GainXP(xp);
     }
+
+    private void OnEnable()
+    {
+        GameManager.OnPlayerInstantiated += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerInstantiated -= SetPlayer;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        playerObject = player;
+    }
+
     public void setHealth(float health)
     {
         this.health = health;

@@ -34,27 +34,21 @@ public class CharactersSelect : MonoBehaviour
         onBarbarianSelect();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void onBarbarianSelect()
     {
         description_text.SetText(barbarian);
-        chosen = "b";
+        GameManager.SelectedCharacter = "Barbarian"; // Save selection
     }
 
     public void onSorcererSelect()
     {
         description_text.SetText(sorcerer);
-        chosen = "s";
+        GameManager.SelectedCharacter = "Sorcerer"; // Save selection
     }
 
     public void onRogueSelect()
     {
         description_text.SetText(rogue);
-        chosen = "r";
+        GameManager.SelectedCharacter = "Rogue"; // Save selection
     }
 }

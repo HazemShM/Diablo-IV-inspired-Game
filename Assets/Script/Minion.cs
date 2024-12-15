@@ -50,8 +50,7 @@ public class Minion : MonoBehaviour
         }
 
         MinionAnimator = GetComponent<Animator>();
-        playerObject = GameObject.FindGameObjectWithTag("Player");
-        player = playerObject.transform;
+
         // Store the original position of the minion
         originalPosition = transform.position;
     }
@@ -109,8 +108,6 @@ public class Minion : MonoBehaviour
                 MinionAnimator.SetBool("punch", false);
             }
         }
-
-
     }
 
 
@@ -145,5 +142,21 @@ public class Minion : MonoBehaviour
     {
         currentState = MinionState.Alerted;
         Debug.Log("Minion is now Alerted!");
+    }
+
+    private void OnEnable()
+    {
+        GameManager.OnPlayerInstantiated += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerInstantiated -= SetPlayer;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        playerObject = player;
+        this.player = player.transform;
     }
 }
