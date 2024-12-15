@@ -7,8 +7,9 @@ public class MiniMap : MonoBehaviour
 {
     Transform player;
 
-    void Start(){
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+    void Start()
+    {
+        //player = GameObject.FindGameObjectWithTag("Player").transform;
     }
     void Update()
     {
@@ -16,5 +17,20 @@ public class MiniMap : MonoBehaviour
         newPosition.y = transform.position.y; // Maintain the minimap camera's height
         transform.position = newPosition;
         transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+    }
+    private void OnEnable()
+    {
+        GameManager.OnPlayerInstantiated += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerInstantiated -= SetPlayer;
+    }
+
+    void SetPlayer(GameObject playerObject)
+    {
+        player = playerObject.transform;
+
     }
 }

@@ -93,6 +93,24 @@ public class PlayerController : MonoBehaviour
         {
             Heal();
         }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            currentHP = Mathf.Min(currentHP + 20, maxHP); // Heal but don't exceed maxHP
+            updateHP(currentHP);
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            currentHP -= 20;
+            updateHP(currentHP);
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            abilityPoints++;
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Heal();
+        }
         if (movement.ReadValue<float>() == 1)
         {
             HandleInput();

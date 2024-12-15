@@ -39,8 +39,6 @@ public class Navigation : MonoBehaviour
             }
         }
 
-        playerObject = GameObject.FindGameObjectWithTag("Player");
-        player = playerObject.transform;
         agent = GetComponent<NavMeshAgent>();
         campCollider = campArea.GetComponent<Colliding_Minion>();
 
@@ -151,5 +149,21 @@ public class Navigation : MonoBehaviour
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");
         }
+    }
+
+    private void OnEnable()
+    {
+        GameManager.OnPlayerInstantiated += SetPlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerInstantiated -= SetPlayer;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        playerObject = player;
+        this.player = player.transform;
     }
 }
