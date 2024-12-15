@@ -22,7 +22,7 @@ public class Minion : MonoBehaviour
     private Transform clone;
     private NavMeshAgent agent;
     private Animator MinionAnimator;
-    public float closeDistance = 20f;
+    public float closeDistance = 60f;
     public float attackRange = 2f;
     private Colliding_Minion campCollider;
     private GameObject campArea;
@@ -101,7 +101,7 @@ public class Minion : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, target.position);
 
-        if (distance > closeDistance)
+        if (!campCollider.playerInCamp)
         {
             ReturnToOriginalPosition();
             return;
@@ -178,7 +178,7 @@ public class Minion : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isTargetInRange && playerController != null && !playerController.isShieldActive)
+        if (isTargetInRange && playerController != null && !playerController.isShieldActive && !playerController.invincible)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");

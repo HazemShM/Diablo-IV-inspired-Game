@@ -40,8 +40,10 @@ public class PlayerController : MonoBehaviour
     public int healingPotions = 0;
     public int runeFragments = 0;
     bool die = false;
-
+    bool slowmo = false;
+    public bool invincible;
     public bool isShieldActive = false; // Whether the shield is currently active
+    public bool removeCooldown;
     public float normalSpeed;
     public bool wildcardUnlock;
     public bool defensiveUnlock;
@@ -85,6 +87,8 @@ public class PlayerController : MonoBehaviour
         healingPotionsText.text = $"Healing Potions: {healingPotions}";
         runeFragmentsText.text = $"Rune Fragments: {runeFragments}";
         normalSpeed = agent.speed;
+        invincible = false;
+        removeCooldown = false;
     }
 
     private void Update()
@@ -107,10 +111,39 @@ public class PlayerController : MonoBehaviour
         {
             abilityPoints++;
         }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            wildcardUnlock = true;
+            ultimateUnlock = true;
+            defensiveUnlock = true;
+        }
+        if (Input.GetKeyDown(KeyCode.M) && !slowmo)
+        {
+            Time.timeScale = 0.5f;
+            slowmo = true;
+        }
+        else if (Input.GetKeyDown(KeyCode.M) && slowmo)
+        {
+            Time.timeScale = 1f;
+            slowmo = false;
+        }
+        if (Input.GetKeyDown(KeyCode.I) && !invincible)
+        {
+            invincible = true;
+        }
+        else if (Input.GetKeyDown(KeyCode.I) && invincible)
+        {
+            invincible = false;
+        }
         if (Input.GetKeyDown(KeyCode.F))
         {
             Heal();
         }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            removeCooldown = true;
+        }
+
         if (movement.ReadValue<float>() == 1)
         {
             HandleInput();
