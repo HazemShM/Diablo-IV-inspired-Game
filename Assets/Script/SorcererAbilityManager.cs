@@ -217,7 +217,7 @@ public class SorcererAbilityManager : MonoBehaviour
         }
     }
 
-    private IEnumerator CastFireball()
+  private IEnumerator CastFireball()
     {
         activeAbility = "Fireball";
         Vector3 targetPos = Vector3.zero;
@@ -264,6 +264,11 @@ public class SorcererAbilityManager : MonoBehaviour
         }
 
         Vector3 direction = (targetPos - playerPos).normalized;
+
+        // Debug.Log(direction);
+        // Quaternion fireballRotation = Quaternion.LookRotation(direction);
+        // fireball.transform.rotation = fireballRotation;
+
         rb.velocity = direction * 10f;
         activeAbility = null;
         Time.timeScale = 1f;
