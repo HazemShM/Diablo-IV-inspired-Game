@@ -576,8 +576,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25e114885ac79554aaba64e5e3b20dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  description_text: {fileID: 0}
-  title_text: {fileID: 0}
 --- !u!1 &1260976657
 GameObject:
   m_ObjectHideFlags: 0
@@ -663,7 +661,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1064845281}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
-        m_MethodName: OnStartButton
+        m_MethodName: onMainLevelButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1150,7 +1148,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1064845281}
         m_TargetAssemblyTypeName: Menu, Assembly-CSharp
-        m_MethodName: OnStartButton
+        m_MethodName: onBossLevelButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

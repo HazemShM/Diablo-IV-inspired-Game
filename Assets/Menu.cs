@@ -4,11 +4,12 @@ using TMPro;
 
 public class Menu : MonoBehaviour
 {
+    public static bool mainlevel;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        mainlevel = true;
     }
 
     // Update is called once per frame
@@ -35,6 +36,18 @@ public class Menu : MonoBehaviour
     public void onPlayButton()
     {
         SceneManager.LoadScene(3);
+    }
+
+    public void onMainLevelButton()
+    {
+        mainlevel = true;
+        SceneManager.LoadScene(2);
+    }
+
+    public void onBossLevelButton()
+    {
+        mainlevel = false;
+        SceneManager.LoadScene(2);
     }
 
     public void OnOptionsButton()

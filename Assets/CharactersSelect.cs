@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class CharactersSelect : MonoBehaviour
@@ -50,5 +51,16 @@ public class CharactersSelect : MonoBehaviour
     {
         description_text.SetText(rogue);
         GameManager.SelectedCharacter = "Rogue"; // Save selection
+    }
+
+    public void onPlayerSelectButton()
+    {
+        if (Menu.mainlevel) { SceneManager.LoadScene(3); }
+        else { SceneManager.LoadScene(7); }
+    }
+
+    public void OnBackButton()
+    {
+        SceneManager.LoadScene(0);
     }
 }

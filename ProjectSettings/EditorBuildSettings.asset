@@ -23,4 +23,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CreditsScene.unity
     guid: c254b800b8c073c45b2b45ba65c3b140
+  - enabled: 1
+    path: Assets/Scenes/GameOverscene.unity
+    guid: c66c2f313fac67043b31615650b585b4
+  - enabled: 1
+    path: Assets/Scenes/BossScene.unity
+    guid: 8e2dea2223b5d8346b09a53689e9e683
   m_configObjects: {}
