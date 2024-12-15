@@ -30,9 +30,11 @@ public class RogueAbilities : MonoBehaviour
     bool isDashing = false;
     [SerializeField]
     private GameObject hitParticle;
+    private PlayerController playerController;
     void Start()
     {
         cam = Camera.main;
+        playerController = GetComponent<PlayerController>();
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         Ability basicAbillity = new Ability(AbilityType.Basic, "Arrow", KeyCode.Mouse1, 5, 1);
@@ -44,9 +46,52 @@ public class RogueAbilities : MonoBehaviour
     }
 
     void Update()
-    {
-        foreach (var ability in abilities)
+    {   
+        if (playerController.defensiveUnlock)
         {
+            abilities[1].unlockAbility();
+        }
+        if (playerController.wildcardUnlock)
+        {
+            abilities[2].unlockAbility();
+        }
+        if (playerController.ultimateUnlock)
+        {
+            abilities[3].unlockAbility();
+        }
+
+        if (playerController.removeCooldown)
+        {
+            foreach (Ability ability in abilities){
+                ability.cooldownTime = 0;
+                ability.isOnCooldown = false;
+                ability.cooldownTimer = 0;
+            }
+            
+        }else{
+            abilities[0].cooldownTime = 1;
+            abilities[1].cooldownTime = 10;
+            abilities[2].cooldownTime = 5;
+            abilities[3].cooldownTime = 10;
+        }
+        foreach (var ability in abilities)
+        {   
+            if (ability.type == AbilityType.Basic)
+            {
+                playerController.basicCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+            else if (ability.type == AbilityType.WildCard)
+            {
+                playerController.wildcardCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+            else if (ability.type == AbilityType.Defensive)
+            {
+                playerController.defensiveCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
+            else if (ability.type == AbilityType.Ultimate)
+            {
+                playerController.ultimateCooldownText.text = $"{(int)ability.cooldownTimer}";
+            }
             if (ability.isOnCooldown)
             {
                 ability.cooldownTimer -= Time.deltaTime;
@@ -58,9 +103,9 @@ public class RogueAbilities : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(ability.activationKey))
+            if (Input.GetKeyDown(ability.activationKey) && ability.unlocked)
             {
-                if (isUsingAbility)
+                if (isUsingAbility && ability.type != AbilityType.Defensive)
                 {
                     Debug.Log($"{currentAbility.name} is currently active!");
                     continue;
@@ -83,10 +128,14 @@ public class RogueAbilities : MonoBehaviour
                 if (currentAbility.type == AbilityType.WildCard)
                 {
                     StartCoroutine(Dash());
+                    currentAbility.isOnCooldown = true;
+                    currentAbility.cooldownTimer = currentAbility.cooldownTime;
                 }
                 else if (currentAbility.type == AbilityType.Ultimate)
                 {
                     ShowerOfArrows();
+                    currentAbility.isOnCooldown = true;
+                    currentAbility.cooldownTimer = currentAbility.cooldownTime;
                 }
             }
         }
@@ -94,82 +143,26 @@ public class RogueAbilities : MonoBehaviour
 
     void UseAbility(Ability ability)
     {
-        currentAbility = ability;
-        Debug.Log($"{ability.name} used!");
-        ability.isOnCooldown = true;
-        ability.cooldownTimer = ability.cooldownTime;
-        isUsingAbility = true;
-        if (currentAbility.type == AbilityType.Basic)
-        {
+        Debug.Log($"{ability.name} used!");        
+        if (ability.type == AbilityType.Basic)
+        {   
+            ability.isOnCooldown = true;
+            ability.cooldownTimer = ability.cooldownTime;
+            currentAbility = ability;
+            isUsingAbility = true;
             Arrow();
         }
-        else if (currentAbility.type == AbilityType.Defensive)
-        {
+        else if (ability.type == AbilityType.Defensive)
+        {   
+            ability.isOnCooldown = true;
+            ability.cooldownTimer = ability.cooldownTime;
             StartCoroutine(SmokeBomb());
+        }else{
+            currentAbility = ability;
+            isUsingAbility = true;
         }
     }
 
-    // private void Arrow(){
-    //     animator.SetTrigger("Arrow");
-    //     GameObject arrow = Instantiate(arrowPrefab, arrowPoint.position, transform.rotation);
-    //     arrow.GetComponent<Rigidbody>().AddForce(transform.forward *25f,ForceMode.Impulse);
-    //     isUsingAbility = false;
-    // }
-    // private void Arrow()
-    // {
-    //     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-    //     RaycastHit hit;
-    //     Vector3 targetPosition;
-
-    //     // Cast a ray to detect the target
-    //     if (Physics.Raycast(ray, out hit, 100))
-    //     {
-    //         Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 2f);
-
-    //         if (hit.collider.CompareTag("Enemy"))
-    //         {
-    //             // Get the target position
-    //             targetPosition = hit.point;
-    //             Debug.Log("Target enemy detected at: " + targetPosition);
-
-    //             // Trigger the animation to shoot the arrow
-    //             animator.SetTrigger("Arrow");
-
-    //             // Smooth rotation of the player towards the target
-    //             Vector3 directionToTarget = (targetPosition - transform.position).normalized;
-    //             directionToTarget.y = 0; // Make sure the rotation is only on the Y-axis
-    //             Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
-    //             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f); // Smooth rotation
-
-    //             // Instantiate the arrow at the specified position
-    //             GameObject arrow = Instantiate(arrowPrefab, arrowPoint.position, Quaternion.LookRotation(directionToTarget));
-    //             Rigidbody rb = arrow.GetComponent<Rigidbody>();
-
-    //             // Apply force to the arrow to shoot it
-    //             if (rb != null)
-    //             {
-    //                 rb.AddForce(directionToTarget * 25f, ForceMode.Impulse);
-    //                 Debug.Log("Arrow shot towards: " + targetPosition);
-    //             }
-    //             else
-    //             {
-    //                 Debug.LogError("Arrow prefab is missing a Rigidbody component!");
-    //                 isUsingAbility = false;
-    //                 return;
-    //             }
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning("No enemy found.");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning("No valid target detected!");
-    //     }
-        
-    //     isUsingAbility = false;
-    // }
     private void Arrow()
     {   
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -178,20 +171,19 @@ public class RogueAbilities : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 100,layerMask))
         {
-            Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 2f);
             if (hit.collider.CompareTag("Enemy"))
             {
                 // targetPosition = hit.collider.transform.position;
                 animator.SetTrigger("Arrow");
-                targetPosition = hit.point;
+                targetPosition = hit.transform.position;
                 Debug.Log("Target enemy detected at: " + targetPosition);
 
                 Vector3 directionToTarget = (targetPosition - transform.position).normalized;
                 directionToTarget.y = 0;
-                // transform.rotation = Quaternion.LookRotation(directionToTarget);
+                transform.rotation = Quaternion.LookRotation(directionToTarget);
                 // StartCoroutine(SmoothRotateToTarget(targetPosition));
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(directionToTarget), Time.deltaTime * 2f); 
+                // transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(directionToTarget), Time.deltaTime * 2f); 
                 GameObject arrow = Instantiate(arrowPrefab, arrowPoint.position, Quaternion.LookRotation(directionToTarget));
                 Rigidbody rb = arrow.GetComponent<Rigidbody>();
 
@@ -237,30 +229,12 @@ public class RogueAbilities : MonoBehaviour
 
         transform.rotation = targetRotation;
     }
-    private void DebugDrawSphere(Vector3 position, float radius, Color color)
-    {
-        int segments = 36; // Number of segments to approximate the sphere
-        float angleIncrement = 360f / segments;
-
-        // Draw circle in X-Z plane
-        for (int i = 0; i < segments; i++)
-        {
-            float angle1 = Mathf.Deg2Rad * i * angleIncrement;
-            float angle2 = Mathf.Deg2Rad * (i + 1) * angleIncrement;
-
-            Vector3 point1 = position + new Vector3(Mathf.Cos(angle1), 0, Mathf.Sin(angle1)) * radius;
-            Vector3 point2 = position + new Vector3(Mathf.Cos(angle2), 0, Mathf.Sin(angle2)) * radius;
-
-            Debug.DrawLine(point1, point2, color, 0.1f); // Line duration is 0.1 seconds
-        }
-    }
-
     private void ShowerOfArrows()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         float duration = 3f;
-        float radius = 3f;
+        float radius = 6f;
         int damage = 10;
         float slowDownMultiplier = 0.25f;
 
@@ -280,7 +254,61 @@ public class RogueAbilities : MonoBehaviour
                 if (enemy.CompareTag("Enemy"))
                 {
                     StartCoroutine(ApplySlowEffect(enemy.gameObject, slowDownMultiplier, 3f));
-                    enemy.GetComponent<Enemy>().TakeDamage(damage);
+                    Enemy enemyComponent = enemy.GetComponent<Enemy>();
+                    if(enemyComponent){
+                        GameObject particleInstance = Instantiate(
+                            hitParticle,
+                            new Vector3(
+                                enemy.transform.position.x,
+                                transform.position.y,
+                                enemy.transform.position.z
+                            ),
+                            enemy.transform.rotation
+                        );
+                        Destroy(particleInstance, 2.0f);
+                        enemyComponent.TakeDamage(damage);
+                    }
+                    LilithAnimation lilith = enemy.GetComponent<LilithAnimation>();
+                    if (lilith != null)
+                    {
+                        if (lilith.activeMinions.Count > 0)
+                        {
+                            Debug.Log("There are active minions. Kill them first before damaging Lilith!");
+                            return;
+                        }
+                        else if (lilith.isShieldActive)
+                        {
+                            if (!lilith.isAuraActive)
+                            {
+                                lilith.shieldHealth -= damage;
+                                Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                            }
+                            if (lilith.shieldHealth <= 0)
+                            {
+                                StartCoroutine(lilith.CheckShieldDestroyed());
+                            }
+                            if (lilith.isAuraActive)
+                            {
+                                Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
+                                playerController.ReflectDamage((int)damage + 15);
+                                lilith.isAuraActive = false;
+                                StartCoroutine(lilith.ReflectiveAuraCountdown());
+                            }
+                        }
+                        else
+                        {
+                            lilith.TakeDamage(damage, playerController);
+                            Debug.Log($"Lilith's Health: {lilith.bossHealth}");
+                            GameObject particleInstance = Instantiate(
+                            hitParticle,
+                            new Vector3(
+                                lilith.transform.position.x,
+                                transform.position.y,
+                                lilith.transform.position.z
+                            ), lilith.transform.rotation);
+                            Destroy(particleInstance, 2.0f);
+                        }
+                    }
                 }
             }
             StartCoroutine(ArrowRainEffect(targetPosition, duration,radius));
@@ -355,13 +383,15 @@ public class RogueAbilities : MonoBehaviour
     //     isUsingAbility = false;
     // }
     private IEnumerator SmokeBomb()
-    {
-        float stunRadius = 3f; 
-
+    {   
+        float stunRadius = 5f; 
         animator.SetTrigger("SmokeBomb");
         yield return new WaitForSeconds(0.5f);
 
         GameObject smoke = Instantiate(smokePrefab, transform.position, Quaternion.identity);
+        // smoke.transform.GetChild(0).localScale = new Vector3(stunRadius, 2, stunRadius);
+        // smokePrefab.transform.localScale = new Vector3(stunRadius, 2, stunRadius);
+
         Destroy(smoke, 2);
         Debug.Log("Smoke bomb dropped!");
 
@@ -375,8 +405,6 @@ public class RogueAbilities : MonoBehaviour
                 StartCoroutine(StunEnemy(enemy, 5f));
             }
         }
-
-        isUsingAbility = false;
     }
     private IEnumerator StunEnemy(GameObject enemy, float stunDuration)
     {
@@ -420,7 +448,7 @@ public class RogueAbilities : MonoBehaviour
         isDashing = true;
         Vector3? targetPosition = null;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit1, 100))
+        if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
         {
             targetPosition = hit1.point;
             Debug.Log("Target position set: " + targetPosition);
@@ -428,11 +456,11 @@ public class RogueAbilities : MonoBehaviour
         Vector3 target = targetPosition.Value;
 
         NavMeshHit hit;
-        if (!NavMesh.SamplePosition(target, out hit, 1.0f, NavMesh.AllAreas))
+        if (!NavMesh.SamplePosition(target, out hit, 2.0f, NavMesh.AllAreas))
         {
             Debug.LogWarning("Target position is not on a valid NavMesh!");
             isDashing = false;
-            yield break; // Stop the coroutine if the target is not valid
+            yield break;
         }
 
         target = hit.position;
@@ -446,11 +474,11 @@ public class RogueAbilities : MonoBehaviour
         anim.SetBool("Dash", true);
         anim.SetTrigger("DashTrigger");
 
-        float dashSpeed = 10f;
+        float dashSpeed = playerController.normalSpeed*2;
 
         while (Vector3.Distance(transform.position, target) > 0.1f)
         {
-            if (!NavMesh.SamplePosition(target, out hit, 1.0f, NavMesh.AllAreas))
+            if (!NavMesh.SamplePosition(target, out hit, 2.0f, NavMesh.AllAreas))
             {
                 Debug.LogWarning("Target position is no longer reachable!");
                 break;

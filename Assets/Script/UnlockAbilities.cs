@@ -15,6 +15,17 @@ public class UnlockAbilities : MonoBehaviour
         SetButtonAlpha(ultimateButton, 125);
         SetButtonAlpha(defensiveButton, 125);
     }
+    public void Update(){
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            playerController.wildcardUnlock = true;
+            playerController.defensiveUnlock = true;
+            playerController.ultimateUnlock = true;
+            SetButtonUnlocked(wildcardButton);
+            SetButtonUnlocked(ultimateButton);
+            SetButtonUnlocked(defensiveButton);
+        }
+    }
     public void WildcardAbility()
     {
         Debug.Log("Wildcard button clicked");
