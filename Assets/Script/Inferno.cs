@@ -19,10 +19,10 @@ public class DamageAbility : MonoBehaviour
     {
         // Deal initial damage to all enemies in range
         DealDamage(initialDamage);
-        
+
         // Wait for 1 second (initial damage already dealt)
         yield return new WaitForSeconds(1f);
-        
+
         // Ongoing damage every second for the remaining duration
         float elapsedTime = 1f;
         while (elapsedTime < duration)
@@ -51,7 +51,7 @@ public class DamageAbility : MonoBehaviour
                 Enemy enemy = collider.GetComponent<Enemy>();
                 if (enemy != null)
                 {
-                    enemy.health -= damageAmount;
+                    enemy.TakeDamage(damageAmount);
                     Debug.Log($"Enemy hit! New health: {enemy.health}");
                 }
             }

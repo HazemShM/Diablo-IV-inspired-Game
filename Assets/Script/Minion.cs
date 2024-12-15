@@ -17,8 +17,10 @@ public class Minion : MonoBehaviour
     private bool isTargetInRange = false;
     private Coroutine damageCoroutine;
     private Transform target;
+    private GameObject targetObject;
+    private Transform player;
     private NavMeshAgent agent;
-    private Animator minionAnimator;
+    private Animator MinionAnimator;
     public float closeDistance = 20f;
     public float attackRange = 2f;
     private Colliding_Minion campCollider;
@@ -49,9 +51,8 @@ public class Minion : MonoBehaviour
             Debug.LogWarning($"{gameObject.name} could not find its camp!");
         }
 
-        minionAnimator = GetComponent<Animator>();
-        playerObject = GameObject.FindGameObjectWithTag("Player");
-        target = playerObject.transform;
+        MinionAnimator = GetComponent<Animator>();
+
         currentState = MinionState.Alerted;
 
         originalPosition = transform.position;
@@ -59,15 +60,18 @@ public class Minion : MonoBehaviour
 
     void Update()
     {
-        if (currentState == MinionState.Alerted)
+        if (GameObject.FindGameObjectWithTag("Clone") != null)
         {
-            if (campCollider.playerInCamp)
+            playerObject = GameObject.FindGameObjectWithTag("Clone");
+        }
+        else
+        {
+            playerObject = GameObject.FindGameObjectWithTag("Player");
+        }
+        if (campCollider.playerInCamp)
+        {
+            if (currentState == MinionState.Alerted)
             {
-                HandleTargeting();
-            }
-            else
-            {
-                ReturnToOriginalPosition();
                 float distance = Vector3.Distance(transform.position, player.position);
                 Vector3 directionToTarget = (player.position - transform.position).normalized;
                 directionToTarget.y = 0;
@@ -93,6 +97,28 @@ public class Minion : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            // When the player leaves the camp, move back to the original position
+            if (agent.remainingDistance <= agent.stoppingDistance)
+            {
+                // The minion has reached its original position
+                MinionAnimator.SetBool("idle", true);
+                MinionAnimator.SetBool("run", false);
+                MinionAnimator.SetBool("punch", false);
+            }
+            else
+            {
+                if (GetComponent<Enemy>().health > 0)
+                {
+                    agent.isStopped = false;
+                }
+                agent.SetDestination(originalPosition); // Move back to the original position
+                MinionAnimator.SetBool("run", true);
+                MinionAnimator.SetBool("idle", false);
+                MinionAnimator.SetBool("punch", false);
+            }
+        }
     }
 
     private void HandleTargeting()
@@ -114,9 +140,9 @@ public class Minion : MonoBehaviour
         if (distance <= attackRange)
         {
             agent.isStopped = true;
-            minionAnimator.SetBool("punch", true);
-            minionAnimator.SetBool("run", false);
-            minionAnimator.SetBool("idle", false);
+            MinionAnimator.SetBool("punch", true);
+            MinionAnimator.SetBool("run", false);
+            MinionAnimator.SetBool("idle", false);
         }
         else
         {
@@ -125,9 +151,9 @@ public class Minion : MonoBehaviour
                 agent.isStopped = false;
             }
             agent.SetDestination(target.position);
-            minionAnimator.SetBool("run", true);
-            minionAnimator.SetBool("idle", false);
-            minionAnimator.SetBool("punch", false);
+            MinionAnimator.SetBool("run", true);
+            MinionAnimator.SetBool("idle", false);
+            MinionAnimator.SetBool("punch", false);
         }
     }
 
@@ -135,9 +161,9 @@ public class Minion : MonoBehaviour
     {
         if (agent.remainingDistance <= agent.stoppingDistance)
         {
-            minionAnimator.SetBool("idle", true);
-            minionAnimator.SetBool("run", false);
-            minionAnimator.SetBool("punch", false);
+            MinionAnimator.SetBool("idle", true);
+            MinionAnimator.SetBool("run", false);
+            MinionAnimator.SetBool("punch", false);
         }
         else
         {
@@ -154,9 +180,9 @@ public class Minion : MonoBehaviour
                 MinionAnimator.SetBool("punch", false);
             }
             agent.SetDestination(originalPosition);
-            minionAnimator.SetBool("run", true);
-            minionAnimator.SetBool("idle", false);
-            minionAnimator.SetBool("punch", false);
+            MinionAnimator.SetBool("run", true);
+            MinionAnimator.SetBool("idle", false);
+            MinionAnimator.SetBool("punch", false);
         }
     }
 
@@ -187,7 +213,7 @@ public class Minion : MonoBehaviour
 
     public void DealDamageToPlayer()
     {
-        if (isPlayerInRange && player != null && !playerController.isShieldActive)
+        if (isTargetInRange && player != null && !playerController.isShieldActive)
         {
             playerController.TakeDamage(attackDamage);
             Debug.Log("Minion dealt damage to the player!");
@@ -204,9 +230,9 @@ public class Minion : MonoBehaviour
     {
         target = newTarget;
         HandleTargeting();
-      }
+    }
 
-private void OnEnable()
+    private void OnEnable()
     {
         GameManager.OnPlayerInstantiated += SetPlayer;
     }
@@ -219,6 +245,10 @@ private void OnEnable()
     public void SetPlayer(GameObject player)
     {
         playerObject = player;
+        if (targetObject != null)
+        {
+            target = targetObject.transform;
+        }
         this.player = player.transform;
     }
 }
