@@ -345,11 +345,17 @@ MonoBehaviour:
   abilityPoints: 0
   healingPotions: 0
   runeFragments: 0
+  invincible: 0
   isShieldActive: 0
+  removeCooldown: 0
   normalSpeed: 0
   wildcardUnlock: 0
   defensiveUnlock: 0
   ultimateUnlock: 0
+  gotHit: 0
+  runePickUpSound: {fileID: 8300000, guid: 28038a0f06798044dbd137ab0be39656, type: 3}
+  healthPickUpSound: {fileID: 8300000, guid: 8076103fb0f9baf4db44e560177074d8, type: 3}
+  healSound: {fileID: 8300000, guid: c11b43d3822a805419a7bb5292e6fccd, type: 3}
 --- !u!114 &5938973600601099842
 MonoBehaviour:
   m_ObjectHideFlags: 0
