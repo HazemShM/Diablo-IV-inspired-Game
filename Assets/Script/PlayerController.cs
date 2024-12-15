@@ -112,12 +112,7 @@ public class PlayerController : MonoBehaviour
         {
             abilityPoints++;
         }
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            wildcardUnlock = true;
-            ultimateUnlock = true;
-            defensiveUnlock = true;
-        }
+        
         if (Input.GetKeyDown(KeyCode.M) && !slowmo)
         {
             Time.timeScale = 0.5f;
@@ -128,13 +123,9 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 1f;
             slowmo = false;
         }
-        if (Input.GetKeyDown(KeyCode.I) && !invincible)
+        if (Input.GetKeyDown(KeyCode.I))
         {
-            invincible = true;
-        }
-        else if (Input.GetKeyDown(KeyCode.I) && invincible)
-        {
-            invincible = false;
+            invincible = !invincible;
         }
         if (Input.GetKeyDown(KeyCode.F))
         {
@@ -142,7 +133,7 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            removeCooldown = true;
+            removeCooldown = !removeCooldown;
         }
 
         if (movement.ReadValue<float>() == 1)
@@ -292,7 +283,7 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMove(Vector3 location)
     {
-        agent.speed = 9;
+        agent.speed = normalSpeed;
         agent.SetDestination(location);
     }
 

@@ -77,10 +77,16 @@ public class BarbarianAnimation : MonoBehaviour
 
         if (playerController.removeCooldown)
         {
-            abilities[0].cooldownTime = 0;
-            abilities[1].cooldownTime = 0;
-            abilities[2].cooldownTime = 0;
-            abilities[3].cooldownTime = 0;
+            foreach (Ability ability in abilities){
+                ability.cooldownTime = 0;
+                ability.isOnCooldown = false;
+                ability.cooldownTimer = 0;
+            }
+        }else{
+            abilities[0].cooldownTime = 1;
+            abilities[1].cooldownTime = 10;
+            abilities[2].cooldownTime = 5;
+            abilities[3].cooldownTime = 10;
         }
         foreach (var ability in abilities)
         {
