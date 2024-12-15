@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class Navigation : MonoBehaviour
 {
     private Transform player;
+    private Transform clone;
     private NavMeshAgent agent;
     private Animator animator;
     public float closeDistance = 30f;
@@ -13,13 +14,14 @@ public class Navigation : MonoBehaviour
     private Colliding_Minion campCollider;
     private GameObject campArea;
 
-    private bool isPlayerInRange = false;
+    private bool isTargetInRange = false;
     public int attackDamage = 10;
-    //new
+
+    // New patrol points
     private Vector3[] points;
     private int currentpointIndex = 0;
     Vector3 target;
-    private bool wasRunningOnThePlayer = false;
+    private bool wasRunningOnTarget = false;
     GameObject playerObject;
     public bool isAggressive;
     public bool isDead;
@@ -47,7 +49,8 @@ public class Navigation : MonoBehaviour
             Debug.LogWarning($"{gameObject.name} could not find its camp!");
         }
         animator = GetComponent<Animator>();
-        //new
+
+        // Generate patrol points
         points = GeneratePoints(transform.position, 10f);
         if (points.Length > 0)
         {
@@ -56,7 +59,6 @@ public class Navigation : MonoBehaviour
         }
     }
 
-    //new
     Vector3[] GeneratePoints(Vector3 center, float offset)
     {
         return new Vector3[]
@@ -65,15 +67,17 @@ public class Navigation : MonoBehaviour
             center + new Vector3(offset, 0, 0),   // East (+X)
             center + new Vector3(0, 0, -offset), // South (-Z)
             center + new Vector3(-offset, 0, 0), // West (-X)
-            
         };
     }
 
     void Update()
     {
+        UpdateTarget();
+
         if (campCollider.playerInCamp && isAggressive)
         {
-            float distance = Vector3.Distance(transform.position, player.position);
+            float distance = Vector3.Distance(transform.position, clone != null ? clone.position : player.position);
+
             if (distance < closeDistance)
             {
                 if (animator != null &&
@@ -87,7 +91,7 @@ public class Navigation : MonoBehaviour
             else
             {
                 agent.isStopped = false;
-                agent.SetDestination(player.position);
+                agent.SetDestination(clone != null ? clone.position : player.position);
                 if (animator != null &&
                 !animator.GetCurrentAnimatorStateInfo(0).IsName("Run"))
                 {
@@ -96,12 +100,10 @@ public class Navigation : MonoBehaviour
                     animator.SetBool("attack", false);
                 }
             }
-            wasRunningOnThePlayer = true;
+            wasRunningOnTarget = true;
         }
         else
         {
-            // new
-            // agent.isStopped = true;
             if (animator != null &&
             !animator.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
             {
@@ -109,11 +111,11 @@ public class Navigation : MonoBehaviour
                 animator.SetBool("run", false);
                 animator.SetBool("attack", false);
             }
-            // new
-            if (wasRunningOnThePlayer)
+
+            if (wasRunningOnTarget)
             {
                 agent.SetDestination(target);
-                wasRunningOnThePlayer = false;
+                wasRunningOnTarget = false;
             }
             if (Vector3.Distance(transform.position, target) < 1)
             {
@@ -124,30 +126,61 @@ public class Navigation : MonoBehaviour
         }
     }
 
+    private void UpdateTarget()
+    {
+        // Check if a Clone exists and set it as the target
+        GameObject cloneObject = GameObject.FindGameObjectWithTag("Clone");
+
+        if (cloneObject != null)
+        {
+            clone = cloneObject.transform;
+        }
+        else
+        {
+            clone = null;
+        }
+
+        // If no Clone exists, fallback to Player
+        if (clone == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject != null)
+            {
+                player = playerObject.transform;
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
-            isPlayerInRange = true;
-            playerController = other.GetComponent<PlayerController>();
+            isTargetInRange = true;
+            if (other.CompareTag("Player"))
+            {
+                playerController = other.GetComponent<PlayerController>();
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.CompareTag("Clone"))
         {
-            isPlayerInRange = false;
-            playerController = null;
+            isTargetInRange = false;
+            if (other.CompareTag("Player"))
+            {
+                playerController = null;
+            }
         }
     }
 
     public void DealDamageToPlayer()
     {
-        if (isPlayerInRange && player != null && !playerController.isShieldActive)
+        if (isTargetInRange && player != null && !playerController.isShieldActive)
         {
             playerController.TakeDamage(attackDamage);
-            Debug.Log("Minion dealt damage to the player!");
+            Debug.Log("Demon dealt damage to the player!");
         }
     }
 
