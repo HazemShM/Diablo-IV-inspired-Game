@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LilithAnimation : MonoBehaviour
 {
@@ -352,6 +353,7 @@ public class LilithAnimation : MonoBehaviour
         ac.PlayOneShot(Phase2Death);
         yield return new WaitForSeconds(5);
         Destroy(gameObject);
+        SceneManager.LoadScene(5);
     }
 
     private IEnumerator TransitionToPhase2()

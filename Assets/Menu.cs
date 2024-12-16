@@ -38,8 +38,15 @@ public class Menu : MonoBehaviour
 
     public void onPlayButton()
     {
+        if (SceneManager.GetSceneByName("TerrainScene").isLoaded)
+        {
+            SceneManager.LoadScene(3);
+        }
+        else
+        {
+            SceneManager.LoadScene(7);
+        }
         Time.timeScale = 1;
-        SceneManager.LoadScene(3);
     }
 
     public void onMainLevelButton()
