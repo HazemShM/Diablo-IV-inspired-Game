@@ -5,7 +5,7 @@ using TMPro;
 public class Menu : MonoBehaviour
 {
     public static bool mainlevel;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,43 +20,51 @@ public class Menu : MonoBehaviour
 
     public void OnMenuButton()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
 
     public void onLevelButton()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(1);
     }
 
     public void OnCharactersButton()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(2);
     }
 
     public void onPlayButton()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(3);
     }
 
     public void onMainLevelButton()
     {
+        Time.timeScale = 1;
         mainlevel = true;
         SceneManager.LoadScene(2);
     }
 
     public void onBossLevelButton()
     {
+        Time.timeScale = 1;
         mainlevel = false;
         SceneManager.LoadScene(2);
     }
 
     public void OnOptionsButton()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(4);
     }
 
     public void OnCreditsButton()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(5);
     }
 
