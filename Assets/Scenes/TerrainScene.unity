@@ -888,6 +888,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInCamp: 0
+  cloneInCamp: 0
 --- !u!114 &86864749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5404,6 +5405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInCamp: 0
+  cloneInCamp: 0
 --- !u!114 &672872939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7472,6 +7474,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1780247685}
     m_Modifications:
+    - target: {fileID: 1289353710871883753, guid: b5be5326f2498a24b974b91acce372a4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3589470939029188435, guid: b5be5326f2498a24b974b91acce372a4, type: 3}
       propertyPath: m_Name
       value: Pausing
@@ -11786,6 +11792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInCamp: 0
+  cloneInCamp: 0
 --- !u!114 &1404077246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12612,7 +12619,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.3968683, y: 0.03324406}
   m_AnchorMax: {x: 0.45479047, y: 0.10341469}
-  m_AnchoredPosition: {x: 76.5, y: -11.999878}
+  m_AnchoredPosition: {x: 76.5, y: -11.999847}
   m_SizeDelta: {x: 149, y: 23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1480237529
@@ -13318,7 +13325,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.0946048, y: 0.27775598}
   m_AnchorMax: {x: 0.149, y: 0.38858533}
-  m_AnchoredPosition: {x: -2.8999634, y: 0.80000305}
+  m_AnchoredPosition: {x: -2.8999023, y: 0.80000305}
   m_SizeDelta: {x: 6, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1557955436
@@ -14063,6 +14070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInCamp: 0
+  cloneInCamp: 0
 --- !u!114 &1634007593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14155,7 +14163,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.51352686, y: 0.03324406}
   m_AnchorMax: {x: 0.5704732, y: 0.10341469}
-  m_AnchoredPosition: {x: 76, y: -11.999878}
+  m_AnchoredPosition: {x: 76, y: -11.999847}
   m_SizeDelta: {x: 150, y: 23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1635264169
@@ -14832,6 +14840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInCamp: 0
+  cloneInCamp: 0
 --- !u!65 &1720789308
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15494,6 +15503,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInCamp: 0
+  cloneInCamp: 0
 --- !u!114 &1780006339
 MonoBehaviour:
   m_ObjectHideFlags: 0
