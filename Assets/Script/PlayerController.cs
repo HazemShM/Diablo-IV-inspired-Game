@@ -105,6 +105,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {   
+        animator = GetComponent<Animator>();
         if(Input.GetKeyDown(KeyCode.Z)){
             cam.GetComponent<CameraController>().RotateCamera();
         }
@@ -236,7 +237,9 @@ public class PlayerController : MonoBehaviour
             {
                 audioSource.PlayOneShot(hitSound);
             }
-            animator.SetTrigger("hit");
+            if(animator != null){
+                animator.SetTrigger("hit");
+            }
         }
     }
 
@@ -338,14 +341,18 @@ public class PlayerController : MonoBehaviour
     {
         float progress = (float)hp / maxHP;
         hpbar?.SetProgress(progress);
-        hpText.text = $"{hp}";
+        if(hpText != null){
+            hpText.text = $"{hp}";
+        }
     }
 
     public void updateXP(float xp)
     {
         float progress = (float)xp / maxXP;
         xpbar?.SetProgress(progress);
-        xpText.text = $"{xp}";
+        if(xpText != null){
+            xpText.text = $"{xp}";
+        }
     }
 
     public void ReflectDamage(int reflectedDamage)

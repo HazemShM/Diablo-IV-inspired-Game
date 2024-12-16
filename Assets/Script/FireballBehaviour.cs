@@ -9,16 +9,21 @@ public class FireballBehavior : MonoBehaviour
     public SorcererAbilityManager sorcererAbilityManager;
     public PlayerController playerController;
 
-    void start(){
+    void Start(){
         playerController = sorcererAbilityManager.GetComponent<PlayerController>();
     }
     private void OnTriggerEnter(Collider other)
     {
+        playerController = sorcererAbilityManager.GetComponent<PlayerController>();
         if (other.CompareTag("Enemy"))
         {
             LilithAnimation lilith = other.GetComponent<LilithAnimation>();
             if(lilith != null){
-                lilith.TakeDamage(5f, playerController);
+                playerController = sorcererAbilityManager.GetComponent<PlayerController>();
+                Debug.Log(playerController);
+                if(playerController != null){
+                    lilith.TakeDamage(5f, playerController);
+                }
             }else{
                 Enemy enemy = other.GetComponent<Enemy>();
                 if (enemy != null)

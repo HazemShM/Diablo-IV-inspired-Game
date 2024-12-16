@@ -19,6 +19,7 @@ public class DamageAbility : MonoBehaviour
 
     private IEnumerator DealDamageOverTime()
     {
+        playerController = sorcererAbilityManager.GetComponent<PlayerController>();
         DealDamage(initialDamage);
 
         yield return new WaitForSeconds(1f);
@@ -36,6 +37,7 @@ public class DamageAbility : MonoBehaviour
 
     private void DealDamage(int damageAmount)
     {
+        playerController = sorcererAbilityManager.GetComponent<PlayerController>();
         collidersInRange = Physics.OverlapSphere(transform.position, damageRange);
 
         foreach (Collider collider in collidersInRange)
@@ -44,7 +46,11 @@ public class DamageAbility : MonoBehaviour
             {
                 LilithAnimation lilith = collider.GetComponent<LilithAnimation>();
                 if(lilith != null){
-                    lilith.TakeDamage(damageAmount, playerController);
+                    playerController = sorcererAbilityManager.GetComponent<PlayerController>();
+                    Debug.Log(playerController);
+                    if(playerController != null){
+                        lilith.TakeDamage(damageAmount, playerController);
+                    }
                 }
                 Enemy enemy = collider.GetComponent<Enemy>();
                 if (enemy != null)
