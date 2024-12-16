@@ -190,6 +190,10 @@ public class SorcererAbilityManager : MonoBehaviour
         Collider[] hitColliders = Physics.OverlapSphere(clone.transform.position, explosionRadius);
         foreach (Collider hit in hitColliders)
         {
+            LilithAnimation lilith = GetComponent<Collider>().GetComponent<LilithAnimation>();
+            if(lilith != null){
+                lilith.TakeDamage(explosionDamage, playerController);
+            }
             Enemy minion = hit.GetComponent<Enemy>();
             if (minion != null)
             {
@@ -293,7 +297,7 @@ public class SorcererAbilityManager : MonoBehaviour
         {
             yield break;
         }
-        targetPos.y = 0;
+        targetPos.y = transform.position.y;
 
         GameObject inferno = Instantiate(infernoPrefab, targetPos, Quaternion.identity);
         Destroy(inferno, infernoDuration);

@@ -9,9 +9,6 @@ public class LilithAnimation : MonoBehaviour
     [SerializeField] GameObject Bloodspikes;
     [SerializeField] private int maxMinions = 3;
     [SerializeField] GameObject shield; // Shield
-    [SerializeField] GameObject DivebombParticle; // Divebomb Particle
-    [SerializeField] FloatingHealthBar healthBar;
-    [SerializeField] FloatingShieldScript shieldBar;
     public List<GameObject> activeMinions = new List<GameObject>();
     public int Phase;
     public float shieldHealth = 50f;
@@ -23,11 +20,9 @@ public class LilithAnimation : MonoBehaviour
     public bool CanUseSummonMinions = true;
     public bool CanUseDiveBomb = false; // Just like phase 2. Why? Because I can.
     public bool HitbyDiveBomb = false;
-    public bool SpikesActivated = false;
     public bool EffectedByPlayerUlt = false;
     public bool TransitioningToPhase2 = false;
     private GameObject shieldInstance;
-    private GameObject divebombInstance;
     private GameObject playerObject;
     private Transform player;
     private readonly float diveBombRadius = 10f;
@@ -36,43 +31,20 @@ public class LilithAnimation : MonoBehaviour
     public AudioClip DiveBombSound;
     public AudioClip ShieldSound;
     public AudioClip SummonSound;
-    public AudioClip Phase1Death;
-    public AudioClip Phase2Death;
     AudioSource ac;
 
-    void Awake()
-    {
-        healthBar = GetComponentInChildren<FloatingHealthBar>();
-        shieldBar = GetComponentInChildren<FloatingShieldScript>();
-    }
     void Start()
     {
+        playerObject = GameObject.FindGameObjectWithTag("Player");
+        player = playerObject.transform;
         animator = GetComponent<Animator>();
         ac = GetComponent<AudioSource>();
-        shieldBar.gameObject.SetActive(false);
-        CanUseBloodySpikes = true;
         Phase = 1; // Change this to test phases
         Debug.Log("Phase: " + Phase);
-    }
-    private void OnEnable()
-    {
-        GameManager.OnPlayerInstantiated += SetPlayer;
-    }
-
-    private void OnDisable()
-    {
-        GameManager.OnPlayerInstantiated -= SetPlayer;
-    }
-
-    public void SetPlayer(GameObject player)
-    {
-        playerObject = player;
-        this.player = player.transform;
     }
 
     void Update()
     {
-        healthBar.UpdateHealthBar(bossHealth, 50);
         LookAtPlayer();
         UpdateActiveMinions();
         if (Phase == 1)
@@ -88,8 +60,6 @@ public class LilithAnimation : MonoBehaviour
         }
         else if (Phase == 2)
         {
-            shieldBar.gameObject.SetActive(true);
-            shieldBar.UpdateHealthBar(shieldHealth, 50);
             if (!TransitioningToPhase2)
             {
                 if (CanUseBloodySpikes && !isAuraActive) // Use Bloody Spikes if available
@@ -102,6 +72,7 @@ public class LilithAnimation : MonoBehaviour
                 }
             }
         }
+        Debug.Log(bossHealth);
     }
 
     private void LookAtPlayer()
@@ -153,7 +124,7 @@ public class LilithAnimation : MonoBehaviour
     public IEnumerator SummonMinionsCountdown()
     {
         CanUseDiveBomb = true;
-        yield return new WaitForSeconds(15); // Summon minions charge countdown 
+        yield return new WaitForSeconds(30); // Summon minions charge countdown 
         CanUseSummonMinions = true;
     }
 
@@ -169,10 +140,6 @@ public class LilithAnimation : MonoBehaviour
         animator.SetTrigger("Divebomb");
         yield return new WaitForSeconds(2f);
         Vector3 centerPosition = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-        Vector3 spawnPosition = centerPosition + new Vector3(0, 0.2f, 0);
-        Quaternion spawnRotation = Quaternion.identity;
-        divebombInstance = Instantiate(DivebombParticle, spawnPosition, spawnRotation);
-        ac.PlayOneShot(DiveBombSound);
         Collider[] hitColliders = Physics.OverlapSphere(centerPosition, diveBombRadius);
         Debug.Log("DiveBomb triggered!");
         foreach (Collider collider in hitColliders)
@@ -193,8 +160,6 @@ public class LilithAnimation : MonoBehaviour
 
     public IEnumerator DiveBombCountdown()
     {
-        yield return new WaitForSeconds(1);
-        Destroy(divebombInstance);
         yield return new WaitForSeconds(10); // DiveBomb cooldown duration
         HitbyDiveBomb = false;
         CanUseDiveBomb = true;
@@ -213,7 +178,7 @@ public class LilithAnimation : MonoBehaviour
     public IEnumerator ReflectiveAuraCountdown()
     {
         yield return new WaitForSeconds(2);
-        //CanUseBloodySpikes = true;
+        CanUseBloodySpikes = true;
         Debug.Log("Reflective aura cooldown started.");
         yield return new WaitForSeconds(20);
         CanUseReflectiveAura = true;
@@ -232,7 +197,6 @@ public class LilithAnimation : MonoBehaviour
     public void ActivateShield()
     {
         isShieldActive = true;
-        shieldBar.gameObject.SetActive(true);
         shieldHealth = 50f;
         Vector3 spawnPosition = transform.position + new Vector3(0, 0.2f, 0);
         Quaternion spawnRotation = Quaternion.identity;
@@ -253,11 +217,11 @@ public class LilithAnimation : MonoBehaviour
         Vector3 spawnPosition = transform.position + transform.forward * 4.0f;
         spawnPosition.y = -3;
         GameObject bloodspikes = Instantiate(Bloodspikes, spawnPosition, Quaternion.LookRotation(transform.forward));
-        yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, 1, 1.0f));
+        yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, 2, 1.0f));
         ac.PlayOneShot(BloodSpikesSound);
         yield return new WaitForSeconds(1.8f);
         yield return StartCoroutine(MoveBloodSpikes(bloodspikes, -4, -4, 1.0f));
-        //ac.PlayOneShot(BloodSpikesSound);
+        ac.PlayOneShot(BloodSpikesSound);
         Destroy(bloodspikes);
         StartCoroutine(BloodySpikesCountdown());
     }
@@ -295,7 +259,6 @@ public class LilithAnimation : MonoBehaviour
         else if (isAuraActive)
         {
             isAuraActive = false; // Deactivate the aura
-            //CanUseBloodySpikes = true;
             Debug.Log("Aura destroyed! Reflecting damage to the player.");
             StartCoroutine(ReflectiveAuraCountdown()); // Start cooldown
             if (playerController != null && !playerController.isShieldActive)
@@ -312,7 +275,6 @@ public class LilithAnimation : MonoBehaviour
             Debug.Log($"Player health: {playerController.hpbar}");
             if (shieldHealth <= 0)
             {
-                shieldBar.gameObject.SetActive(false);
                 float excessDamage = Mathf.Abs(shieldHealth);
                 shieldHealth = 0;
                 isShieldActive = false;
@@ -349,7 +311,6 @@ public class LilithAnimation : MonoBehaviour
     private IEnumerator Die()
     {
         animator.SetBool("Dead", true);
-        ac.PlayOneShot(Phase2Death);
         yield return new WaitForSeconds(5);
         Destroy(gameObject);
     }
@@ -361,10 +322,8 @@ public class LilithAnimation : MonoBehaviour
         Debug.Log("Transitioning to Phase 2...");
         animator.SetTrigger("Phase1Ended");
         TransitioningToPhase2 = true;
-        ac.PlayOneShot(Phase1Death);
         yield return new WaitForSeconds(5);
         TransitioningToPhase2 = false;
-        yield return new WaitForSeconds(3.8f);
         ActivateShield();
     }
 }

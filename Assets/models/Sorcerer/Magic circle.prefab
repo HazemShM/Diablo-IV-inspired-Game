@@ -19651,6 +19651,8 @@ MonoBehaviour:
   initialDamage: 10
   ongoingDamage: 2
   duration: 5
+  sorcererAbilityManager: {fileID: 4128777247339890127, guid: 529b100293e06cf4a9cc4b74620b929d, type: 3}
+  playerController: {fileID: 0}
 --- !u!1 &7117482993686869536
 GameObject:
   m_ObjectHideFlags: 0
