@@ -14,6 +14,8 @@ public class Enemy : MonoBehaviour
     bool died = false;
     Navigation navigation;
     [SerializeField] FloatingHealthBar healthBar;
+    AudioManager audioManager;
+
     void Start()
     {
         health = maxHealth;
@@ -25,12 +27,14 @@ public class Enemy : MonoBehaviour
     void Awake()
     {
         healthBar = GetComponentInChildren<FloatingHealthBar>();
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
     }
     void Update()
     {
         if (health <= 0 && !died)
         {
             Die();
+            audioManager.PlaySFX(audioManager.EnemyDie);
         }
     }
     public void TakeDamage(float damageAmount)
