@@ -73,6 +73,11 @@ public class LilithAnimation : MonoBehaviour
 
     void Update()
     {
+        if (!player)
+        {
+            playerObject = GameObject.FindWithTag("Player");
+            player = playerObject.transform;
+        }
         healthBar.UpdateHealthBar(bossHealth, 50);
         LookAtPlayer();
         UpdateActiveMinions();
