@@ -19,24 +19,24 @@ public class PlayerPersistence : MonoBehaviour
         }
     }
 
-    // void OnEnable()
-    // {
-    //     SceneManager.sceneLoaded += OnSceneLoaded;
-    // }
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
-    // void OnDisable()
-    // {
-    //     SceneManager.sceneLoaded -= OnSceneLoaded;
-    // }
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
 
-    // private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    // {
-    //     string[] persistentScenes = {"BossScene"};
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        string[] persistentScenes = { "MenuScene", "CreditsScene", "GameOverscene" };
 
-    //     if (!System.Array.Exists(persistentScenes, s => s == scene.name))
-    //     {
-    //         Destroy(gameObject);
-    //     }
-    // }
+        if (System.Array.Exists(persistentScenes, s => s == scene.name))
+        {
+            Destroy(gameObject);
+        }
+    }
 
 }

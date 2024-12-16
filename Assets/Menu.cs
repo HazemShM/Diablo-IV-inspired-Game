@@ -5,6 +5,8 @@ using TMPro;
 public class Menu : MonoBehaviour
 {
     public static bool mainlevel;
+    public static int currentLevel;
+
 
     // Start is called before the first frame update
     void Start()
@@ -33,20 +35,17 @@ public class Menu : MonoBehaviour
     public void OnCharactersButton()
     {
         Time.timeScale = 1;
+        currentLevel = 3;
         SceneManager.LoadScene(2);
     }
 
     public void onPlayButton()
     {
-        if (SceneManager.GetSceneByName("TerrainScene").isLoaded)
+        if (currentLevel == 7)
         {
-            SceneManager.LoadScene(3);
-        }
-        else
-        {   
             GameManager.increaseLevels = true;
-            SceneManager.LoadScene(7);
         }
+        SceneManager.LoadScene(currentLevel);
         Time.timeScale = 1;
     }
 
@@ -54,6 +53,7 @@ public class Menu : MonoBehaviour
     {
         Time.timeScale = 1;
         mainlevel = true;
+        currentLevel = 3;
         SceneManager.LoadScene(2);
     }
 
@@ -61,6 +61,7 @@ public class Menu : MonoBehaviour
     {
         Time.timeScale = 1;
         mainlevel = false;
+        currentLevel = 7;
         SceneManager.LoadScene(2);
     }
 
