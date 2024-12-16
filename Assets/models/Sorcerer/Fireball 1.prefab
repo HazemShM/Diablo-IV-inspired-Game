@@ -264,6 +264,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16543245f4afb694eb811cc90ab4100c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sorcererAbilityManager: {fileID: 4128777247339890127, guid: 529b100293e06cf4a9cc4b74620b929d, type: 3}
+  playerController: {fileID: 0}
 --- !u!1001 &4082342311233327254
 PrefabInstance:
   m_ObjectHideFlags: 0
