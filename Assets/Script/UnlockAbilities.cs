@@ -26,6 +26,21 @@ public class UnlockAbilities : MonoBehaviour
             SetButtonUnlocked(defensiveButton);
         }
     }
+    public void unlockSpecificAbilities(bool wildcard, bool defensive , bool ultimate){
+        if(wildcard){
+            SetButtonUnlocked(wildcardButton);
+        }
+        if(defensive){
+            SetButtonUnlocked(defensiveButton);
+        }
+        if(ultimate){
+            SetButtonUnlocked(ultimateButton);
+        }
+        playerController.wildcardUnlock = wildcard;
+        playerController.defensiveUnlock = defensive;
+        playerController.ultimateUnlock = ultimate;
+        Debug.Log("Unlocked Needed abilities "+wildcard+" "+defensive+" "+ultimate);
+    }
     public void WildcardAbility()
     {
         Debug.Log("Wildcard button clicked");

@@ -25,6 +25,7 @@ TagManager:
   - Spikes
   - destroyable
   - NavMesh
+  - BossPortal
   layers:
   - Default
   - TransparentFX
