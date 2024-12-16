@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting;
+using System.Collections;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : MonoBehaviour
@@ -122,7 +123,7 @@ public class PlayerController : MonoBehaviour
         {
             abilityPoints++;
         }
-        
+
         if (Input.GetKeyDown(KeyCode.M) && !slowmo)
         {
             Time.timeScale = 0.5f;
@@ -169,8 +170,9 @@ public class PlayerController : MonoBehaviour
             {
                 healingPotions++;
                 Destroy(other.gameObject);
+                audioSource.PlayOneShot(healthPickUpSound);
             }
-            audioSource.PlayOneShot(healthPickUpSound);
+
         }
         else if (other.CompareTag("rune"))
         {
@@ -207,9 +209,16 @@ public class PlayerController : MonoBehaviour
         Debug.Log($"Healed for {healAmount} HP. Current HP: {currentHP}. Healing potions left: {healingPotions}");
     }
     public void TakeDamage(int damage)
-    {   
+    {
 
-        currentHP -= damage;
+        if (currentHP > 0)
+        {
+            currentHP -= damage;
+        }
+        else
+        {
+            currentHP = 0;
+        }
         Debug.Log($"Player took {damage} damage! Current health: {currentHP}");
 
         updateHP(currentHP);
@@ -217,8 +226,11 @@ public class PlayerController : MonoBehaviour
         if (currentHP <= 0)
         {
             Die();
-        }else{
-            if(hitSound){
+        }
+        else
+        {
+            if (hitSound)
+            {
                 audioSource.PlayOneShot(hitSound);
             }
             animator.SetTrigger("hit");
@@ -270,13 +282,18 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Player has died!");
             Animator animator = GetComponent<Animator>();
             animator.SetTrigger("die");
-            if(deathSound){
+            if (deathSound)
+            {
                 audioSource.PlayOneShot(deathSound);
             }
         }
         die = true;
+        StartCoroutine(DieDelay());
+    }
+    private IEnumerator DieDelay()
+    {
+        yield return new WaitForSeconds(2);
         SceneManager.LoadScene(6);
-        // Handle player death (disable controls, play animation, etc.)
     }
 
     private void OnEnable()
