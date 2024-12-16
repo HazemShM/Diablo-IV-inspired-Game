@@ -52,8 +52,6 @@ public class Minion : MonoBehaviour
 
         MinionAnimator = GetComponent<Animator>();
 
-        currentState = MinionState.Alerted;
-
         originalPosition = transform.position;
     }
 

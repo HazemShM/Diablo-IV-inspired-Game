@@ -13,8 +13,11 @@ public class campMinions : MonoBehaviour
     {
         for (int i = 0; i < enemies.Length; i++)
         {
-            // Assume minions are already instantiated in the scene and assigned to the array
             Minion minion = enemies[i];
+            if (minion != null)
+            {
+                minion.currentState = Minion.MinionState.NonAggressive;
+            }
             if (minion == null) continue;
 
             if (alertedCount < maxAlertedMinions && Random.value > 0.3f)
