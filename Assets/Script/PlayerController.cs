@@ -104,7 +104,10 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Update()
-    {
+    {   
+        if(Input.GetKeyDown(KeyCode.Z)){
+            cam.GetComponent<CameraController>().RotateCamera();
+        }
         if (Input.GetKeyDown(KeyCode.F))
         {
             Heal();
@@ -314,7 +317,7 @@ public class PlayerController : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 100, layerMask))
+        if (Physics.Raycast(ray, out hit, 500, layerMask))
         {
             PlayerMove(hit.point);
         }

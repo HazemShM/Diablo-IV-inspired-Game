@@ -56,6 +56,7 @@ public class RogueAbilities : MonoBehaviour
     {   
         if (playerController.defensiveUnlock)
         {
+            Debug.Log("defensiveUnlock "+playerController.defensiveUnlock);
             abilities[1].unlockAbility();
         }
         if (playerController.wildcardUnlock)
@@ -176,7 +177,7 @@ public class RogueAbilities : MonoBehaviour
         RaycastHit hit;
         Vector3 targetPosition;
 
-        if (Physics.Raycast(ray, out hit, 100,layerMask))
+        if (Physics.Raycast(ray, out hit, 500,layerMask))
         {
             if (hit.collider.CompareTag("Enemy"))
             {
@@ -245,13 +246,14 @@ public class RogueAbilities : MonoBehaviour
         int damage = 10;
         float slowDownMultiplier = 0.25f;
 
-        if (Physics.Raycast(ray, out hit, 100, layerMask))
+        if (Physics.Raycast(ray, out hit, 500, layerMask))
         {
             Vector3 targetPosition = hit.point;
-
+            targetPosition.y += 1;
             Debug.Log($"Shower of Arrows activated at position: {targetPosition}");
 
             GameObject ring = Instantiate(circlePrefab, targetPosition, Quaternion.identity);
+            
             audioSource.PlayOneShot(showerOfArrowsSound);
             ring.transform.localScale = new Vector3(radius, 1 , radius);
             Destroy(ring, duration);
@@ -449,7 +451,7 @@ public class RogueAbilities : MonoBehaviour
         isDashing = true;
         Vector3? targetPosition = null;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit1, 100, playerController.layerMask))
+        if (Physics.Raycast(ray, out RaycastHit hit1, 500, playerController.layerMask))
         {
             targetPosition = hit1.point;
             Debug.Log("Target position set: " + targetPosition);
