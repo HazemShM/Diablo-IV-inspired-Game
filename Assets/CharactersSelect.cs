@@ -56,7 +56,11 @@ public class CharactersSelect : MonoBehaviour
     public void onPlayerSelectButton()
     {
         if (Menu.mainlevel) { SceneManager.LoadScene(3); }
-        else { SceneManager.LoadScene(7); }
+        else
+        {
+            SceneManager.LoadScene(7);
+            GameManager.increaseLevels = true;
+        }
     }
 
     public void OnBackButton()
