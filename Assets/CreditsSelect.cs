@@ -19,13 +19,14 @@ public class CreditsSelect : MonoBehaviour
         teamcreds = true;
 
         teamnames = "Name:                                                                  Role:\n" +
-            "Ziad Yasser Fawzy Atteya Gafar                          ....\n" +
+            "Ziad Yasser Fawzy Atteya Gafar                          Boss\n" +
             "Marwan Khalil Ahmed Khalil                                 UI Design\n" +
             "Maryam Mohamed Alsayed Ahmed                      UI Design\n" +
-            "Seifeldin Refaat Hussein Ahmed                          ...\n" +
-            "Yahia Mohamed Ahmed Ali Eid                             ...\n" +
-            "Hazem Sherif Mahmoud Abdo Mohamed             ...\n" +
-            "Ahmed Sherif Hamed Mohamed Hassan              ...";
+            "Seifeldin Refaat Hussein Ahmed                          Sorcerer\n" +
+            "Yahia Mohamed Ahmed Ali Eid                             Barbarian\n" +
+            "Hazem Sherif Mahmoud Abdo Mohamed             Rogue\n" +
+            "Roaa Mahmoud                                   Minion\n" +
+            "Ahmed Sherif Hamed Mohamed Hassan              Demon";
         assets = "https://assetstore.unity.com/packages/3d/environments/landscapes/terrain-sample-asset-pack-145808\n" +
             "https://assetstore.unity.com/packages/essentials/tutorial-projects/unity-particle-pack-127325\n" +
             "https://assetstore.unity.com/packages/3d/props/potions-coin-and-box-of-pandora-pack-71778\n" +
