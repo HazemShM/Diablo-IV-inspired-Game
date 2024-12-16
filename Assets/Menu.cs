@@ -43,7 +43,8 @@ public class Menu : MonoBehaviour
             SceneManager.LoadScene(3);
         }
         else
-        {
+        {   
+            GameManager.increaseLevels = true;
             SceneManager.LoadScene(7);
         }
         Time.timeScale = 1;
