@@ -249,7 +249,7 @@ public class RogueAbilities : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 500, layerMask))
         {
             Vector3 targetPosition = hit.point;
-            targetPosition.y += 1;
+            targetPosition.y = 1;
             Debug.Log($"Shower of Arrows activated at position: {targetPosition}");
 
             GameObject ring = Instantiate(circlePrefab, targetPosition, Quaternion.identity);
@@ -259,6 +259,8 @@ public class RogueAbilities : MonoBehaviour
             Destroy(ring, duration);
             Collider[] hitEnemies = Physics.OverlapSphere(targetPosition, radius, layerMask);
             // DebugDrawSphere(targetPosition, radius, Color.red);
+            StartCoroutine(ArrowRainEffect(targetPosition, duration,radius));
+            LilithAnimation lilith = null;
             foreach (Collider enemy in hitEnemies)
             {
                 if (enemy.CompareTag("Enemy"))
@@ -278,59 +280,58 @@ public class RogueAbilities : MonoBehaviour
                         Destroy(particleInstance, 2.0f);
                         enemyComponent.TakeDamage(damage);
                     }
-                    LilithAnimation lilith = enemy.GetComponent<LilithAnimation>();
-                    if (lilith != null)
-                    {
-                        if (lilith.activeMinions.Count > 0)
-                        {
-                            Debug.Log("There are active minions. Kill them first before damaging Lilith!");
-                            return;
-                        }
-                        else if (lilith.isShieldActive)
-                        {
-                            if (!lilith.isAuraActive)
-                            {
-                                lilith.shieldHealth -= damage;
-                                Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
-                            }
-                            if (lilith.shieldHealth <= 0)
-                            {
-                                StartCoroutine(lilith.CheckShieldDestroyed());
-                            }
-                            if (lilith.isAuraActive)
-                            {
-                                Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
-                                playerController.ReflectDamage((int)damage + 15);
-                                lilith.isAuraActive = false;
-                                StartCoroutine(lilith.ReflectiveAuraCountdown());
-                            }
-                        }
-                        else
-                        {
-                            lilith.TakeDamage(damage, playerController);
-                            Debug.Log($"Lilith's Health: {lilith.bossHealth}");
-                            GameObject particleInstance = Instantiate(
-                            hitParticle,
-                            new Vector3(
-                                lilith.transform.position.x,
-                                transform.position.y,
-                                lilith.transform.position.z
-                            ), lilith.transform.rotation);
-                            Destroy(particleInstance, 2.0f);
-                        }
+                    if(enemy.GetComponent<LilithAnimation>()){
+                        lilith = enemy.GetComponent<LilithAnimation>();
                     }
                 }
             }
-            StartCoroutine(ArrowRainEffect(targetPosition, duration,radius));
-
-           
+            isUsingAbility = false;
+            if (lilith != null)
+            {
+                if (lilith.activeMinions.Count > 0)
+                {
+                    Debug.Log("There are active minions. Kill them first before damaging Lilith!");
+                    return;
+                }
+                else if (lilith.isShieldActive)
+                {
+                    if (!lilith.isAuraActive)
+                    {
+                        lilith.shieldHealth -= damage;
+                        Debug.Log($"Lilith's Shield Health: {lilith.shieldHealth}");
+                    }
+                    if (lilith.shieldHealth <= 0)
+                    {
+                        StartCoroutine(lilith.CheckShieldDestroyed());
+                    }
+                    if (lilith.isAuraActive)
+                    {
+                        Debug.Log("Lilith's shield absorbed the damage! Reflecting damage to player.");
+                        playerController.ReflectDamage((int)damage + 15);
+                        lilith.isAuraActive = false;
+                        StartCoroutine(lilith.ReflectiveAuraCountdown());
+                    }
+                }
+                else
+                {
+                    lilith.TakeDamage(damage, playerController);
+                    Debug.Log($"Lilith's Health: {lilith.bossHealth}");
+                    GameObject particleInstance = Instantiate(
+                    hitParticle,
+                    new Vector3(
+                        lilith.transform.position.x,
+                        transform.position.y,
+                        lilith.transform.position.z
+                    ), lilith.transform.rotation);
+                    Destroy(particleInstance, 2.0f);
+                }
+            }
         }
         else
         {
+            isUsingAbility = false;
             Debug.LogWarning("No valid target selected for Shower of Arrows!");
         }
-
-        isUsingAbility = false;
     }
 
     private IEnumerator ArrowRainEffect(Vector3 position, float effectDuration , float radius)

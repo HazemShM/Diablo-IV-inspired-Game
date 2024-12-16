@@ -65,28 +65,28 @@ public class MainGame : MonoBehaviour
                 break;
         }
         if(playerFound){
-            player.GetComponent<PlayerController>().currentLevel = currentLevel;
-            player.GetComponent<PlayerController>().currentXP = currentXP;
-            player.GetComponent<PlayerController>().maxXP = maxXP;
-            player.GetComponent<PlayerController>().maxHP = maxHP;
-            player.GetComponent<PlayerController>().currentHP = currentHP;
-            player.GetComponent<PlayerController>().abilityPoints = abilityPoints;
-            player.GetComponent<PlayerController>().healingPotions = healingPotions;
-            player.GetComponent<PlayerController>().runeFragments = runeFragments;
-            player.GetComponent<PlayerController>().wildcardUnlock = wildcardUnlock;
-            player.GetComponent<PlayerController>().defensiveUnlock = defensiveUnlock;
-            player.GetComponent<PlayerController>().ultimateUnlock = ultimateUnlock;
+            playerController.currentLevel = currentLevel;
+            playerController.currentXP = currentXP;
+            playerController.maxXP = maxXP;
+            playerController.maxHP = maxHP;
+            playerController.currentHP = currentHP;
+            playerController.abilityPoints = abilityPoints;
+            playerController.healingPotions = healingPotions;
+            playerController.runeFragments = runeFragments;
+            playerController.wildcardUnlock = wildcardUnlock;
+            playerController.defensiveUnlock = defensiveUnlock;
+            playerController.ultimateUnlock = ultimateUnlock;
             playerFound = false;
-            StartCoroutine(UnlockAbilityUI(wildcardUnlock,defensiveUnlock ,ultimateUnlock,0.5f));
-        }else{
-            UnlockMaxLevels();
-        }          
+            StartCoroutine(UnlockAbilityUI(wildcardUnlock,defensiveUnlock ,ultimateUnlock,0.1f));
+        }
+        UnlockMaxLevels();
+          
     }
     public void UnlockMaxLevels(){
         if(!GameManager.increaseLevels){
             return;
         }
-        GameObject player = GameObject.FindWithTag("Player");
+        GameManager.increaseLevels= false;
         bool wildcardUnlock = true;
         bool defensiveUnlock = true;
         bool ultimateUnlock = true;
@@ -98,18 +98,18 @@ public class MainGame : MonoBehaviour
         int abilityPoints = 0;
         int healingPotions = 0;
         int runeFragments = 0;
-        player.GetComponent<PlayerController>().currentLevel = currentLevel;
-        player.GetComponent<PlayerController>().currentXP = currentXP;
-        player.GetComponent<PlayerController>().maxXP = maxXP;
-        player.GetComponent<PlayerController>().maxHP = maxHP;
-        player.GetComponent<PlayerController>().currentHP = currentHP;
-        player.GetComponent<PlayerController>().abilityPoints = abilityPoints;
-        player.GetComponent<PlayerController>().healingPotions = healingPotions;
-        player.GetComponent<PlayerController>().runeFragments = runeFragments;
-        player.GetComponent<PlayerController>().wildcardUnlock = wildcardUnlock;
-        player.GetComponent<PlayerController>().defensiveUnlock = defensiveUnlock;
-        player.GetComponent<PlayerController>().ultimateUnlock = ultimateUnlock;
-        StartCoroutine(UnlockAbilityUI(wildcardUnlock,defensiveUnlock ,ultimateUnlock,0));
+        playerController.currentLevel = currentLevel;
+        playerController.currentXP = currentXP;
+        playerController.maxXP = maxXP;
+        playerController.maxHP = maxHP;
+        playerController.currentHP = currentHP;
+        playerController.abilityPoints = abilityPoints;
+        playerController.healingPotions = healingPotions;
+        playerController.runeFragments = runeFragments;
+        playerController.wildcardUnlock = wildcardUnlock;
+        playerController.defensiveUnlock = defensiveUnlock;
+        playerController.ultimateUnlock = ultimateUnlock;
+        StartCoroutine(UnlockAbilityUI(wildcardUnlock,defensiveUnlock ,ultimateUnlock,0.15f));
 
     }
     private IEnumerator UnlockAbilityUI(bool wildcard, bool defensive , bool ultimate,float delay)
@@ -119,7 +119,6 @@ public class MainGame : MonoBehaviour
 
         if (unlockAbilities.Length > 0)
         {
-            GameObject firstObject = unlockAbilities[0].gameObject;
             unlockAbilities[0].unlockSpecificAbilities(wildcard,defensive ,ultimate);
         }
         else
